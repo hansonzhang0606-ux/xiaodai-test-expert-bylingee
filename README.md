@@ -47,8 +47,17 @@ pip install pymysql pyyaml
 
 ### 方式 A：Git Clone（推荐）
 
+打开本地命令提示窗口，执行：
+
 ```bash
-cd %USERPROFILE%\.lingeebuild\ai-partners
+cd C:\Users\kingdee\.lingeebuild\ai-partners
+```
+
+（若没有 ai-partners 文件夹，先手动新建）
+
+然后再执行：
+
+```bash
 git clone https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee xiaodai-testing-expert
 ```
 
