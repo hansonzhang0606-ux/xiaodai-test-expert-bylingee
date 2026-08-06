@@ -1,0 +1,9 @@
+display_name: AI测试工作流套件
+version: 2.4.1
+category: write
+owner: kingdee
+displayed_category: Efficiency-Tools
+risk_level: medium
+side_effect_level: internal
+tool_access:
+  tools: []

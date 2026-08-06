@@ -1,0 +1,11 @@
+# 敏感配置文件（含 MySQL 连接信息，不可提交）
+skills/ai-test-workflow-skill/config/time_tracking_config.yaml
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 系统文件
+.DS_Store
+Thumbs.db
