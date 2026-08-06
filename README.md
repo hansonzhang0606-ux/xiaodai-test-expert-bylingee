@@ -98,10 +98,7 @@ C:\Users\<你的用户名>\.lingeebuild\ai-partners\xiaodai-testing-expert\
 
 ### 3.1 复制配置模板
 
-```bash
-cd %USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert\skills\ai-test-workflow-skill\config
-copy time_tracking_config.yaml.template time_tracking_config.yaml
-```
+手动将 `skills\ai-test-workflow-skill\config\` 目录下的 `time_tracking_config.yaml.template` 文件复制一份，重命名为 `time_tracking_config.yaml`。
 
 ### 3.2 填写连接信息
 
