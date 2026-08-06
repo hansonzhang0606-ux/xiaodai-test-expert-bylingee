@@ -139,32 +139,48 @@ python -c "import pymysql; import yaml; print('OK')"
 
 ### 5.1 确认文件位置正确
 
-打开文件资源管理器，确认以下路径存在 `assistant.json` 文件：
+灵基平台仅在启动时扫描固定目录下的智能体文件。必须确保文件放在灵基平台的目录下，而不是你自己创建的项目目录中。
+
+打开文件资源管理器，逐一确认：
+
+1. 进入 `C:\Users\你的用户名\.lingeebuild\` 目录（如果看不到 `.lingeebuild` 文件夹，说明灵基尚未安装或未运行过，请先安装并登录一次灵基）
+2. 在该目录下手动创建 `ai-partners` 文件夹（如果不存在）
+3. 将下载的 `xiaodai-testing-expert` 文件夹放入 `ai-partners` 目录下
+4. 确认以下文件存在：
 
 ```
-C:\Users\kingdee\.lingeebuild\ai-partners\xiaodai-testing-expert\assistant.json
+C:\Users\你的用户名\.lingeebuild\ai-partners\xiaodai-testing-expert\assistant.json
 ```
 
-> 快捷打开：Win+R 输入 `%USERPROFILE%\.lingeebuild\ai-partners` 回车。
+> 快捷打开：Win+R 输入 `%USERPROFILE%\.lingeebuild` 回车，即可打开该目录。
+
+> 注意：如果你的 Windows 用户名不是 `kingdee`，路径中的 `kingdee` 要换成你自己的用户名。用 `%USERPROFILE%` 环境变量可以自动适配。
 
 ### 5.2 重启灵基客户端
 
-如果灵基客户端正在运行，先完全关闭（右键托盘图标 → 退出），然后重新打开。
+灵基仅在启动时扫描 `ai-partners` 目录，运行中放入文件不会自动识别。
+
+1. 右键系统托盘中的灵基图标 → 点击「退出」（不是点窗口的 X 关闭，必须从托盘退出）
+2. 等待 3 秒确保进程完全退出
+3. 重新打开灵基
+
+> 如果从托盘退出后仍看不到智能体，打开任务管理器（Ctrl+Shift+Esc），在「进程」或「详细信息」选项卡中查找所有名称含 `Lingee` 或 `金蝶灵基` 的进程，右键「结束任务」，然后重新打开灵基。
 
 ### 5.3 查找智能体
 
 1. 打开灵基桌面客户端
-2. 进入「智能体开发」页面
+2. 点击左侧导航栏「开发」→「智能体开发」
 3. 效贷测试专家应出现在列表中
 
 ### 5.4 如果列表中仍看不到
 
-依次尝试以下方法：
+依次排查：
 
-1. **点击右上角刷新按钮**刷新智能体列表
-2. **完全退出灵基**（右键系统托盘图标 → 退出），重新打开
-3. 检查目录名是否正确：必须是 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`）
-4. 检查 `assistant.json` 是否在该目录下且内容不为空
+1. **检查路径**：Win+R 输入 `%USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert` 回车，如果能打开文件夹并看到 `assistant.json`，路径正确；如果报错找不到，说明文件没有放对位置
+2. **检查目录名**：必须是 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`，也不是其他名称）
+3. **检查文件完整性**：`assistant.json` 文件大小应大于 1KB，如果为 0 字节说明下载不完整，重新下载
+4. **彻底重启**：按 5.2 中的任务管理器方法彻底杀掉灵基进程后重新打开
+5. **检查 .lingeebuild 目录是否存在**：如果 `C:\Users\你的用户名\.lingeebuild\` 目录不存在，说明灵基客户端未正确安装。请先安装灵基客户端并登录一次，会自动创建该目录
 
 ### 5.5 测试智能体
 
