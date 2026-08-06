@@ -137,11 +137,39 @@ python -c "import pymysql; import yaml; print('OK')"
 
 ## 五、在灵基中导入智能体
 
+### 5.1 确认文件位置正确
+
+打开文件资源管理器，确认以下路径存在 `assistant.json` 文件：
+
+```
+C:\Users\kingdee\.lingeebuild\ai-partners\xiaodai-testing-expert\assistant.json
+```
+
+> 快捷打开：Win+R 输入 `%USERPROFILE%\.lingeebuild\ai-partners` 回车。
+
+### 5.2 重启灵基客户端
+
+如果灵基客户端正在运行，先完全关闭（右键托盘图标 → 退出），然后重新打开。
+
+### 5.3 查找智能体
+
 1. 打开灵基桌面客户端
 2. 进入「智能体开发」页面
-3. 效贷测试专家应出现在列表中（如未出现，点击右上角刷新按钮）
-4. 点击进入效贷测试专家
-5. 点击「测试」按钮验证是否可用
+3. 效贷测试专家应出现在列表中
+
+### 5.4 如果列表中仍看不到
+
+依次尝试以下方法：
+
+1. **点击右上角刷新按钮**刷新智能体列表
+2. **完全退出灵基**（右键系统托盘图标 → 退出），重新打开
+3. 检查目录名是否正确：必须是 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`）
+4. 检查 `assistant.json` 是否在该目录下且内容不为空
+
+### 5.5 测试智能体
+
+1. 点击进入效贷测试专家
+2. 点击「测试」按钮验证是否可用
 
 > 如果报错「测试环境未找到技能」，检查目录名是否为 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`），确认放在 `ai-partners\` 目录下。
 
