@@ -241,11 +241,12 @@ A: 参见第六步。确认桥接服务窗口在运行中（不要关闭）。�
 A: 检查 `time_tracking_config.yaml` 中 `storage_mode` 是否为 `"mysql"`。查看 AI 输出中是否有 `MYSQL_SYNC: success` 或 `MYSQL_SYNC: failed` 信息。
 
 **Q: 管理员更新了智能体后，我如何同步更新？**
-A: 两种方式：
-- **Git 方式（推荐）**：打开命令提示符，执行 `cd %USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert`，然后执行 `git pull origin main`。`time_tracking_config.yaml` 已被 .gitignore 排除，不会被覆盖。
+A: 三种方式（推荐第一种）：
+- **灵基对话方式（最简单）**：打开灵基「智能体开发」智能体对话，发送 `https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee 有更新，请重新同步更新下。`，灵基 AI 会自动完成同步。
+- **Git 方式**：打开命令提示符，执行 `cd %USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert`，然后执行 `git pull origin main`。`time_tracking_config.yaml` 已被 .gitignore 排除，不会被覆盖。
 - **ZIP 方式**：重新下载 ZIP，解压覆盖目录（注意不要覆盖你自己的 `time_tracking_config.yaml`）。
 
-更新后无需重新安装，灵基启动时自动读取最新文件。
+更新后需**打开一个新会话**才能生效，旧会话使用的是缓存的旧版本。
 
 **Q: 执行 `npm install -g supergateway` 报错「在此系统上禁止运行脚本」？**
 A: 这是 PowerShell 执行策略限制。以管理员身份打开 PowerShell，执行：
