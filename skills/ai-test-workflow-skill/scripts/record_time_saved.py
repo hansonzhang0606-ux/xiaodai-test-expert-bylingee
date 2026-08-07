@@ -71,51 +71,9 @@ REFERENCE_TIMES = {
 # 人天换算（1人天 = 8小时）
 HOURS_PER_PD = 8.0
 
-# 花名册缓存
-_roster_cache = None
-
-
 def get_skill_dir() -> str:
     """获取 skill 根目录"""
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-def load_team_roster() -> dict:
-    """加载花名册"""
-    global _roster_cache
-    if _roster_cache is not None:
-        return _roster_cache
-
-    roster_path = os.path.join(get_skill_dir(), "config", "team_roster.yaml")
-    if not os.path.exists(roster_path):
-        _roster_cache = {"members": []}
-        return _roster_cache
-
-    # 简单 YAML 解析（避免 PyYAML 依赖）
-    try:
-        import yaml
-        with open(roster_path, "r", encoding="utf-8") as f:
-            _roster_cache = yaml.safe_load(f)
-        return _roster_cache
-    except ImportError:
-        # 无 PyYAML 时用简易解析
-        members = []
-        current = {}
-        with open(roster_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.rstrip()
-                if line.strip().startswith("- name:"):
-                    if current:
-                        members.append(current)
-                    current = {"name": line.split(":", 1)[1].strip().strip('"')}
-                elif "role:" in line and current:
-                    current["role"] = line.split(":", 1)[1].strip().strip('"')
-                elif "active:" in line and current:
-                    current["active"] = line.split(":", 1)[1].strip().strip('"').lower() == "true"
-            if current:
-                members.append(current)
-        _roster_cache = {"members": members}
-        return _roster_cache
 
 
 def validate_employee(employee: str, biz_line: str = "效贷") -> tuple:
