@@ -247,6 +247,13 @@ A: 两种方式：
 
 更新后无需重新安装，灵基启动时自动读取最新文件。
 
+**Q: 执行 `npm install -g supergateway` 报错「在此系统上禁止运行脚本」？**
+A: 这是 PowerShell 执行策略限制。以管理员身份打开 PowerShell，执行：
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+输入 `Y` 确认，然后重新执行 `npm install -g supergateway` 即可。
+
 ---
 
 ## 九、目录结构
