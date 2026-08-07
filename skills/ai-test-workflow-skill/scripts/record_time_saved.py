@@ -118,19 +118,24 @@ def load_team_roster() -> dict:
         return _roster_cache
 
 
-def validate_employee(employee: str) -> tuple:
-    """校验员工是否在花名册中"""
-    roster = load_team_roster()
-    members = roster.get("members", [])
-    active_names = [m["name"] for m in members if m.get("active", True)]
-    all_names = [m["name"] for m in members]
-
-    if employee in active_names:
-        return True, "在职"
-    elif employee in all_names:
-        return False, "已离职/停用"
-    else:
+def validate_employee(employee: str, biz_line: str = "效贷") -> tuple:
+    """校验员工是否在 MySQL 花名册表（agent_team_roster）中"""
+    try:
+        from mysql_helper import get_connection
+        config_path = os.path.join(get_skill_dir(), "config", "time_tracking_config.yaml")
+        conn = get_connection(config_path)
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT name, active FROM agent_team_roster WHERE biz_line=%s AND name=%s",
+            (biz_line, employee)
+        )
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return (True, "在职") if row["active"] else (False, "已离职/停用")
         return False, "不在花名册中"
+    except Exception:
+        return True, "MySQL不可达，跳过校验"
 
 
 def get_data_dir(biz_line: str) -> str:
@@ -161,11 +166,10 @@ def record(
     """记录一条时间节省数据"""
     # 花名册校验
     if not skip_validation:
-        valid, status = validate_employee(employee)
+        valid, status = validate_employee(employee, biz_line)
         if not valid and status == "不在花名册中":
             print(f"⚠️  警告：员工 '{employee}' 不在效贷花名册中。", file=sys.stderr)
-            print(f"   花名册在职人员：{', '.join(m['name'] for m in load_team_roster().get('members', []) if m.get('active', True))}", file=sys.stderr)
-            print(f"   如确为此员工，请联系管理员添加到 config/team_roster.yaml", file=sys.stderr)
+            print(f"   如确为此员工，请联系管理员在 MySQL agent_team_roster 表中添加。", file=sys.stderr)
             print(f"   本次记录仍会保存，但建议核实。", file=sys.stderr)
         elif not valid and status == "已离职/停用":
             print(f"⚠️  警告：员工 '{employee}' 在花名册中标记为停用。", file=sys.stderr)
