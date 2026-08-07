@@ -19,12 +19,13 @@
       "desc": "测试用例生成通用 Skill，支持从需求文档到测试用例入库的灵活流程。多项目复用、知识库驱动、AI核心推导、脚本辅助输出。",
       "bg": "#f5f5f5",
       "tint": "#888",
-      "enabled": true
+      "enabled": true,
+      "sourceType": "local"
     }
   ],
   "knowledge": [],
   "status": "saved",
   "version": "1.0.0",
   "createdAt": "2026-08-05T03:07:48.299Z",
-  "updatedAt": "2026-08-07T11:02:42.593Z"
+  "updatedAt": "2026-08-06T10:29:25.516Z"
 }
