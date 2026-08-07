@@ -234,9 +234,7 @@ xiaodai-testing-expert/
 在灵基中打开「智能体开发」智能体对话，发送：
 
 ```
-请更新效贷测试专家智能体：
-1. 从 GitHub 拉取最新版本：git -C 临时目录 pull origin main（如临时目录已删除则重新 clone）
-2. 将最新文件复制覆盖到智能体目录中（skills、agent.md、avatar.png）
+https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee 有更新，请重新同步更新下。
 ```
 
 > `time_tracking_config.yaml` 已被 .gitignore 排除，更新不会覆盖你的 MySQL 配置。
