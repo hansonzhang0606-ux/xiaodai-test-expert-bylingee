@@ -240,6 +240,13 @@ A: 参见第六步。确认桥接服务窗口在运行中（不要关闭）。�
 **Q: 时间追踪数据写入了本地但没有同步到 MySQL？**
 A: 检查 `time_tracking_config.yaml` 中 `storage_mode` 是否为 `"mysql"`。查看 AI 输出中是否有 `MYSQL_SYNC: success` 或 `MYSQL_SYNC: failed` 信息。
 
+**Q: 管理员更新了智能体后，我如何同步更新？**
+A: 两种方式：
+- **Git 方式（推荐）**：打开命令提示符，执行 `cd %USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert`，然后执行 `git pull origin main`。`time_tracking_config.yaml` 已被 .gitignore 排除，不会被覆盖。
+- **ZIP 方式**：重新下载 ZIP，解压覆盖目录（注意不要覆盖你自己的 `time_tracking_config.yaml`）。
+
+更新后无需重新安装，灵基启动时自动读取最新文件。
+
 ---
 
 ## 九、目录结构
