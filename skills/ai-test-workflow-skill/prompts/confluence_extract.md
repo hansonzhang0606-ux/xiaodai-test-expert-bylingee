@@ -172,9 +172,11 @@ AI 提取页面 → 输出 1.{页面标题}_整理版_v1.0.md
 1. 用 bash 工具执行端口检测命令：`netstat -ano | findstr ":8000 " | findstr "LISTENING"`
 2. 如果端口 8000 已在监听 → 桥接已在运行，直接进入提取流程
 3. 如果端口 8000 未监听 → 桥接未启动，执行以下命令自动启动：
+   > ⚠️ **安全提示**：以下命令中的 Confluence 凭据需替换为实际值。请勿将含真实凭据的版本提交到代码仓库或分享给他人。
    ```
-   Start-Process -FilePath "cmd" -ArgumentList "/c", "set CONFLUENCE_BASE_URL=https://finkms.kingdee.com && set CONFLUENCE_USERNAME=yunxing_zhang && set CONFLUENCE_PASSWORD=Zyx20220826_+ && npx supergateway --stdio ""npx -y atlassian-confluence-mcp-server"" --port 8000 --outputTransport streamableHttp --logLevel none --cors" -WindowStyle Hidden
+   Start-Process -FilePath "cmd" -ArgumentList "/c", "set CONFLUENCE_BASE_URL=<YOUR_CONFLUENCE_URL> && set CONFLUENCE_USERNAME=<YOUR_CONFLUENCE_USERNAME> && set CONFLUENCE_PASSWORD=<YOUR_CONFLUENCE_PASSWORD> && npx supergateway --stdio ""npx -y atlassian-confluence-mcp-server"" --port 8000 --outputTransport streamableHttp --logLevel none --cors" -WindowStyle Hidden
    ```
+   > 使用前请将 `<YOUR_CONFLUENCE_URL>`、`<YOUR_CONFLUENCE_USERNAME>`、`<YOUR_CONFLUENCE_PASSWORD>` 替换为实际 Confluence 服务器地址和账号信息。
 4. 启动后等待 15 秒让服务初始化，再次检测端口确认
 5. 如端口仍不可用，提示用户："Confluence MCP 桥接服务启动失败，请尝试手动运行 `~/.lingeebuild/start-confluence-mcp.bat`"
 
