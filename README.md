@@ -43,52 +43,36 @@ pip install pymysql pyyaml
 
 ---
 
-## 二、下载智能体
+## 二、在灵基中安装智能体
 
-### 方式 A：Git Clone（推荐）
+灵基平台需要通过内部注册才能识别智能体，仅手动复制文件不够。请通过灵基的「智能体开发」智能体来完成安装。
 
-打开本地命令提示窗口，执行：
+### 2.1 启动安装
 
-```bash
-cd C:\Users\kingdee\.lingeebuild\ai-partners
-```
-
-（若没有 ai-partners 文件夹，先手动新建）
-
-然后再执行：
-
-```bash
-git clone https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee xiaodai-testing-expert
-```
-
-### 方式 B：下载 ZIP（无需安装 Git）
-
-1. 浏览器打开 https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee
-2. 点击绿色「Code」按钮 → 「Download ZIP」
-3. 解压 ZIP 文件
-4. 将解压出的文件夹重命名为 `xiaodai-testing-expert`
-5. 移动到 `%USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert`
-
-> 如果 `.lingeebuild\ai-partners` 目录不存在，手动创建即可。
-> 快捷打开：Win+R 输入 `%USERPROFILE%\.lingeebuild` 回车。
-
-最终目录结构应为：
+1. 打开灵基桌面客户端
+2. 点击左侧导航栏「开发」→「智能体开发」
+3. 点击官方的**「智能体开发」**智能体，进入对话
+4. 将以下内容复制粘贴发送给灵基 AI：
 
 ```
-C:\Users\<你的用户名>\.lingeebuild\ai-partners\xiaodai-testing-expert\
-├── assistant.json
-├── agent.md
-├── avatar.png
-├── README.md
-├── .gitignore
-└── skills\
-    └── ai-test-workflow-skill\
-        ├── SKILL.md
-        ├── config\
-        ├── prompts\
-        ├── scripts\
-        └── templates\
+请帮我安装效贷测试专家智能体。操作步骤：
+1. 从 GitHub 克隆：git clone https://github.com/hansonzhang0606-ux/xiaodai-test-expert-bylingee 到临时目录
+2. 用 init-agent.js 创建智能体，名称 xiaodai-testing-expert，显示名"效贷测试专家"，domain 为 it
+3. 把克隆下载的 skills 文件夹、agent.md、avatar.png 复制覆盖到创建的智能体目录中
+4. 用 add-skill.js 绑定 skills/ai-test-workflow-skill 技能
 ```
+
+### 2.2 等待安装完成
+
+灵基 AI 会自动执行上述 4 个步骤（克隆代码、创建智能体、复制文件、绑定技能）。完成后效贷测试专家会出现在智能体列表中。
+
+### 2.3 确认安装结果
+
+1. 在灵基中点击「智能体开发」页面
+2. 列表中应出现「效贷测试专家」
+3. 点击进入后点击「测试」按钮验证是否可用
+
+> 如果测试时报错「测试环境未找到技能」，等待几分钟后再次点击「测试」即可。
 
 ---
 
@@ -135,59 +119,16 @@ python -c "import pymysql; import yaml; print('OK')"
 
 ---
 
-## 五、在灵基中导入智能体
+## 五、确认安装
 
-### 5.1 确认文件位置正确
+安装完成后（第二步），在灵基中确认智能体可用：
 
-灵基平台仅在启动时扫描固定目录下的智能体文件。必须确保文件放在灵基平台的目录下，而不是你自己创建的项目目录中。
+1. 点击左侧导航栏「开发」→「智能体开发」
+2. 列表中应出现「效贷测试专家」
+3. 点击进入后点击「测试」按钮
+4. 系统会自动打开浏览器进入测试会话页面
 
-打开文件资源管理器，逐一确认：
-
-1. 进入 `C:\Users\你的用户名\.lingeebuild\` 目录（如果看不到 `.lingeebuild` 文件夹，说明灵基尚未安装或未运行过，请先安装并登录一次灵基）
-2. 在该目录下手动创建 `ai-partners` 文件夹（如果不存在）
-3. 将下载的 `xiaodai-testing-expert` 文件夹放入 `ai-partners` 目录下
-4. 确认以下文件存在：
-
-```
-C:\Users\你的用户名\.lingeebuild\ai-partners\xiaodai-testing-expert\assistant.json
-```
-
-> 快捷打开：Win+R 输入 `%USERPROFILE%\.lingeebuild` 回车，即可打开该目录。
-
-> 注意：如果你的 Windows 用户名不是 `kingdee`，路径中的 `kingdee` 要换成你自己的用户名。用 `%USERPROFILE%` 环境变量可以自动适配。
-
-### 5.2 重启灵基客户端
-
-灵基仅在启动时扫描 `ai-partners` 目录，运行中放入文件不会自动识别。
-
-1. 右键系统托盘中的灵基图标 → 点击「退出」（不是点窗口的 X 关闭，必须从托盘退出）
-2. 等待 3 秒确保进程完全退出
-3. 重新打开灵基
-
-> 如果从托盘退出后仍看不到智能体，打开任务管理器（Ctrl+Shift+Esc），在「进程」或「详细信息」选项卡中查找所有名称含 `Lingee` 或 `金蝶灵基` 的进程，右键「结束任务」，然后重新打开灵基。
-
-### 5.3 查找智能体
-
-1. 打开灵基桌面客户端
-2. 点击左侧导航栏「开发」→「智能体开发」
-3. 效贷测试专家应出现在列表中
-
-### 5.4 如果列表中仍看不到
-
-依次排查：
-
-1. **检查路径**：Win+R 输入 `%USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert` 回车，如果能打开文件夹并看到 `assistant.json`，路径正确；如果报错找不到，说明文件没有放对位置
-2. **检查目录名**：必须是 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`，也不是其他名称）
-3. **检查文件完整性**：`assistant.json` 文件大小应大于 1KB，如果为 0 字节说明下载不完整，重新下载
-4. **彻底重启**：按 5.2 中的任务管理器方法彻底杀掉灵基进程后重新打开
-5. **检查 .lingeebuild 目录是否存在**：如果 `C:\Users\你的用户名\.lingeebuild\` 目录不存在，说明灵基客户端未正确安装。请先安装灵基客户端并登录一次，会自动创建该目录
-
-### 5.5 测试智能体
-
-1. 点击进入效贷测试专家
-2. 点击「测试」按钮验证是否可用
-
-> 如果报错「测试环境未找到技能」，检查目录名是否为 `xiaodai-testing-expert`（不是 `xiaodai-test-expert-bylingee`），确认放在 `ai-partners\` 目录下。
+> 如果报错「测试环境未找到技能」，等待几分钟后再次点击「测试」即可。
 
 ---
 
@@ -286,15 +227,26 @@ xiaodai-testing-expert/
 
 ## 十、后续更新
 
-当管理员更新了智能体后，GitHub 仓库会有新版本。更新方式：
+当管理员更新了智能体后，GitHub 仓库会有新版本。
 
-**Git 方式：**
-```bash
-cd %USERPROFILE%\.lingeebuild\ai-partners\xiaodai-testing-expert
-git pull origin main
+### 更新方式
+
+在灵基中打开「智能体开发」智能体对话，发送：
+
+```
+请更新效贷测试专家智能体：
+1. 从 GitHub 拉取最新版本：git -C 临时目录 pull origin main（如临时目录已删除则重新 clone）
+2. 将最新文件复制覆盖到智能体目录中（skills、agent.md、avatar.png）
 ```
 
-> `time_tracking_config.yaml` 已被 .gitignore 排除，git pull 不会覆盖你的配置。
+> `time_tracking_config.yaml` 已被 .gitignore 排除，更新不会覆盖你的 MySQL 配置。
 
-**ZIP 方式：**
-重新下载 ZIP，解压覆盖目录（注意不要覆盖 `time_tracking_config.yaml`）。
+### 更新后如何生效
+
+**必须打开一个新会话**才能让更新生效。灵基在启动新会话时才会重新读取智能体配置和技能文件，旧会话使用的是缓存的旧版本。
+
+1. 在灵基 web 页面中，不要继续旧对话
+2. 新建一个对话，选择效贷测试专家
+3. 新会话中自动使用最新配置和技能文件
+
+> 如果更新后仍使用旧版本，回到灵基桌面客户端的智能体编辑页面点击「保存」，强制平台重新加载配置，再开新会话。
