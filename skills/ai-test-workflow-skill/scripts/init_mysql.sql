@@ -4,7 +4,7 @@
 --  通过 biz_line（中文名）和 biz_line_code（编码）区分。
 --
 --  数据库名: testing_metrics（可改为现有数据库名）
---  表名: time_tracking
+--  表名: agent_time_tracking
 --
 --  业务线编码枚举：
 --    XD    = 效贷
@@ -16,7 +16,7 @@
 --    ZHJLS = 智慧记零售
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS time_tracking (
+CREATE TABLE IF NOT EXISTS agent_time_tracking (
     id               INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
     timestamp        DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录时间',
     date             DATE           NOT NULL                          COMMENT '日期',
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS time_tracking (
 --  active=true 表示在职，false 表示离职（保留记录不删除）。
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS team_roster (
+CREATE TABLE IF NOT EXISTS agent_team_roster (
     id               INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
     biz_line         VARCHAR(50)    NOT NULL                          COMMENT '业务线（中文名称）',
     name             VARCHAR(100)   NOT NULL                          COMMENT '员工姓名',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS team_roster (
   COMMENT='测试人员花名册（身份验证用，跨业务线共享）';
 
 -- 初始数据：效贷业务线测试人员
-INSERT INTO team_roster (biz_line, name, role, employee_id, active) VALUES
+INSERT INTO agent_team_roster (biz_line, name, role, employee_id, active) VALUES
     ('效贷', '吴香康', '功能测试', '', 1),
     ('效贷', '周峰',   '功能测试', '', 1),
     ('效贷', '何甜',   '功能测试', '', 1),

@@ -9,7 +9,7 @@
 # ============================================================
 # local:  仅本地 JSONL（无集中存储）
 # mysql:  本地 JSONL + MySQL 数据库（多测试人员实时同步，推荐）
-# 跨业务线共享：所有业务线的测试专家写入同一张 time_tracking 表，
+# 跨业务线共享：所有业务线的测试专家写入同一张 agent_time_tracking 表，
 # 通过 biz_line（中文名）和 biz_line_code（编码）区分。
 storage_mode: "mysql"
 
@@ -42,7 +42,7 @@ mysql:
   user: "YOUR_USERNAME"           # ← 改为你的 MySQL 用户名
   password: "YOUR_PASSWORD"       # ← 改为你的 MySQL 密码
   database: "YOUR_DATABASE"       # ← 改为你的数据库名
-  table: "time_tracking"          # 表名（无需修改）
+  table: "agent_time_tracking"    # 表名（无需修改）
   charset: "utf8mb4"              # 字符集（无需修改）
 
 # ============================================================

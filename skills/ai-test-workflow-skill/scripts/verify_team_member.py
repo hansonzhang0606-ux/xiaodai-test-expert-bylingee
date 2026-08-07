@@ -3,7 +3,7 @@
 """
 花名册身份验证脚本
 
-从 MySQL team_roster 表查询测试人员身份，支持盲输入+精确匹配。
+从 MySQL agent_team_roster 表查询测试人员身份，支持盲输入+精确匹配。
 替代 config/team_roster.yaml 文件读取方式，解决 web 端测试环境找不到配置文件的问题。
 
 用法：
@@ -42,7 +42,7 @@ except ImportError:
 
 def verify_member(name, biz_line="效贷", config_path=None):
     """
-    查询 MySQL team_roster 表验证身份
+    查询 MySQL agent_team_roster 表验证身份
 
     Args:
         name: 待验证的姓名（已去除首尾空格）
@@ -69,7 +69,7 @@ def verify_member(name, biz_line="效贷", config_path=None):
         with conn.cursor() as cursor:
             sql = (
                 "SELECT name, biz_line, role, employee_id "
-                "FROM team_roster "
+                "FROM agent_team_roster "
                 "WHERE biz_line = %s AND name = %s AND active = 1"
             )
             cursor.execute(sql, (biz_line, name))
@@ -94,7 +94,7 @@ def verify_member(name, biz_line="效贷", config_path=None):
         if "Table" in error_msg and "doesn't exist" in error_msg:
             return {
                 "verified": False,
-                "error": "team_roster 表不存在，请先执行 scripts/init_mysql.sql",
+                "error": "agent_team_roster 表不存在，请先执行 scripts/init_mysql.sql",
                 "message": "花名册读取失败，无法完成身份验证。"
             }
         return {

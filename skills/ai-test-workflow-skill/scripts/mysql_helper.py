@@ -40,7 +40,7 @@ def load_mysql_config(config_path):
         "user": mysql_cfg.get("user", "root"),
         "password": mysql_cfg.get("password", ""),
         "database": mysql_cfg.get("database", "testing_metrics"),
-        "table": mysql_cfg.get("table", "time_tracking"),
+        "table": mysql_cfg.get("table", "agent_time_tracking"),
         "charset": mysql_cfg.get("charset", "utf8mb4"),
     }
 
@@ -85,7 +85,7 @@ def insert_record(config_path, record):
         cursor = conn.cursor()
 
         sql = """
-            INSERT INTO time_tracking
+            INSERT INTO agent_time_tracking
                 (timestamp, date, biz_line, biz_line_code, employee, user_story,
                  step, step_code, time_saved_hours, time_saved_pd,
                  total_hours, remark)
@@ -138,7 +138,7 @@ def fetch_all_records(config_path, biz_line=None, employee=None):
         conn = get_connection(config_path)
         cursor = conn.cursor()
 
-        sql = "SELECT * FROM time_tracking WHERE 1=1"
+        sql = "SELECT * FROM agent_time_tracking WHERE 1=1"
         params = {}
 
         if biz_line:

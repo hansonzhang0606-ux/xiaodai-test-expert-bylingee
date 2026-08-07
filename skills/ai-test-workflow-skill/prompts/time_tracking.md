@@ -42,8 +42,8 @@ python scripts/verify_team_member.py --name "{用户输入的姓名}"
 > - 不展示人员列表 → 防止信息泄露
 > - 精确匹配 → 防止模糊猜测
 > - 无 fallback → 只有花名册内人员可用
-> - 管理员通过 MySQL `team_roster` 表控制访问权限（`active=1` 在职，`active=0` 离职）
-> - 花名册数据存储在 MySQL `auto_efficiency_platform.team_roster` 表中，与时间追踪共用同一数据库
+> - 管理员通过 MySQL `agent_team_roster` 表控制访问权限（`active=1` 在职，`active=0` 离职）
+> - 花名册数据存储在 MySQL `auto_efficiency_platform.agent_team_roster` 表中，与时间追踪共用同一数据库
 
 > 身份确认后，整个会话的所有时间记录自动使用该姓名，无需重复输入。
 
@@ -369,7 +369,7 @@ python scripts/generate_time_analytics.py --biz-line "效贷" --format csv
 
 ### MySQL 存储（storage_mode=mysql 时）
 
-共享 MySQL 数据库表 `time_tracking`，所有测试人员的数据实时写入。管理员可随时查看全团队数据。建表 SQL 见 `scripts/init_mysql.sql`。
+共享 MySQL 数据库表 `agent_time_tracking`，所有测试人员的数据实时写入。管理员可随时查看全团队数据。建表 SQL 见 `scripts/init_mysql.sql`。
 
 ### 数据格式（每条记录，存储单位统一为小时）
 
