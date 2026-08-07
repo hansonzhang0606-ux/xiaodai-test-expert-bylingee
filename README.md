@@ -258,11 +258,11 @@ xiaodai-testing-expert/
         ├── config/
         │   ├── time_tracking_config.yaml.template  # ← 复制为 .yaml 并填写
         │   ├── time_tracking_config.yaml           # ← 你的实际配置（不入 Git）
-        │   ├── team_roster.yaml                    # 花名册（已迁移到 MySQL agent_team_roster 表）
+        │   ├── team_roster.yaml                    # 花名册（已废弃，身份验证改用 MySQL agent_team_roster 表）
         │   ├── defaults.yaml                       # 默认配置
         │   └── smartsheet_template.yaml            # 表格模板
         ├── prompts/        # 7个步骤的执行规则文档
-        ├── scripts/        # 10个 Python 脚本 + MySQL 工具
+        ├── scripts/        # 12个 Python 脚本 + MySQL 工具
         └── templates/      # 用例模板和知识库模板
 ```
 
