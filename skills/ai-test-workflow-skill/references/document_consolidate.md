@@ -13,7 +13,7 @@
 | 入口 | 适用场景 | 必读文档 | 输出 |
 |------|---------|----------|------|
 | **A. 本地目录整理** | 需求文档以 Word/PDF/图片/Excel 等形式存放在本地目录 | 本文档 | `1.{目录名}_整理版_v{version}.md` |
-| **B. Confluence 页面提取** | 需求文档在团队 Confluence 在线页面中 | `prompts/confluence_extract.md` | `1.{页面标题}_整理版_v1.0.md` |
+| **B. Confluence 页面提取** | 需求文档在团队 Confluence 在线页面中 | `references/confluence_extract.md` | `1.{页面标题}_整理版_v1.0.md` |
 
 两种入口产出的整理版 MD **完全等价**，都可以直接进入步骤②「需求评审」。
 

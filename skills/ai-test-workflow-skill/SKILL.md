@@ -8,13 +8,13 @@ description: |
   - 模式B（单步模式）：按需执行任意一步（整理/评审/测试点/用例/落库）
 
   ⚠️ 强制约束（最高优先级）：
-  1. 每个阶段开始前，必须完整阅读对应 prompts/*.md 文档，禁止凭记忆执行
+  1. 每个阶段开始前，必须完整阅读对应 references/*.md 文档，禁止凭记忆执行
   2. ⛔ 禁止假设已读取 / 禁止简化 Todo / 禁止跳过步骤 / 禁止自行判断 / 禁止假设状态
   3. ⛔ 步骤①完成后不自动触发评审，必须等待用户指令
   4. ⛔ 步骤⑦在所有模式下都是可选的，用户说"入库"时才执行
   5. ⚠️ 进入任何主步骤时，第一步必须追加子流程 Todo（规划动作），禁止先执行操作再追加
 
-  📖 详细执行规则在各 prompts/*.md 文件中，本文档只保留流程概览和核心约束。
+  📖 详细执行规则在各 references/*.md 文件中，本文档只保留流程概览和核心约束。
 ---
 
 # AI Testcase Workflow Skill
@@ -49,13 +49,13 @@ description: |
 
 | 步骤 | 名称 | AI 参与 | 输入 | 输出 | 必读文档 | ⛔ 不读的风险 |
 |------|------|---------|------|------|----------|-------------|
-| ① | 文档整理 | 中 | 需求目录(源文件) | 整理版 MD + source/归档 | `prompts/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
-| ② | 需求评审 | 高 | 整理版 MD + 精华库 | 评审报告 MD+JSON | `prompts/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
+| ① | 文档整理 | 中 | 需求目录(源文件) | 整理版 MD + source/归档 | `references/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
+| ② | 需求评审 | 高 | 整理版 MD + 精华库 | 评审报告 MD+JSON | `references/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
 | ③ | 确认评审 | - | - | - | - | 等待用户确认 |
-| ④ | 生成测试点 | 高 | 整理版 MD+评审报告+精华库 | 测试点 JSON+XMind+报告 | `prompts/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
+| ④ | 生成测试点 | 高 | 整理版 MD+评审报告+精华库 | 测试点 JSON+XMind+报告 | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
 | ⑤ | 评审XMind | - | - | {需求名}_测试点.xmind（用户直接在此文件上评审） | - | 用户人工评审 |
-| ⑥ | 生成用例 | 高 | {需求名}_测试点.xmind + 整理版 MD | 测试用例 JSON+Excel + reviewed.json（仅模式A） | `prompts/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
-| ⑦ | 入库知识库 | 中 | 全部产出物 | 知识库更新 | `prompts/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
+| ⑥ | 生成用例 | 高 | {需求名}_测试点.xmind + 整理版 MD | 测试用例 JSON+Excel + reviewed.json（仅模式A） | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
+| ⑦ | 入库知识库 | 中 | 全部产出物 | 知识库更新 | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
 
 ---
 
@@ -63,7 +63,21 @@ description: |
 
 ```
 ai-test-workflow-skill/
-├── config/defaults.yaml              # 公共默认配置
+├── references/                        # 参考文档与配置模板（上传到平台）
+│   ├── document_consolidate.md       # ① 文档整理
+│   ├── requirement_review.md         # ② 需求评审
+│   ├── testpoint_generate.md         # ④ 测试点生成
+│   ├── testcase_refine.md            # ⑥ 用例细化
+│   ├── knowledge_base_archive.md     # ⑦ 入库知识库
+│   ├── confluence_extract.md         # Confluence 页面提取
+│   ├── time_tracking.md              # 时间节省追踪 (每步完成后)
+│   ├── config/                       # 配置模板
+│   │   ├── defaults.yaml             # 公共默认配置
+│   │   ├── smartsheet_template.yaml  # 智能表格模板
+│   │   └── time_tracking_config.yaml.template  # 时间追踪配置模板
+│   └── templates/                    # 项目配置+知识库模板
+├── config/                           # 运行时配置（不上传，仅本地）
+│   └── time_tracking_config.yaml     # 本地运行时配置
 ├── scripts/                          # Python 脚本
 │   ├── convert_to_md.py              # 文档转换 (依赖: markitdown[all], pywin32)
 │   ├── parse_xmind.py                # XMind 评审标记解析
@@ -75,14 +89,6 @@ ai-test-workflow-skill/
 │   ├── record_time_saved.py          # 时间节省记录 (每步完成后调用)
 │   ├── generate_time_analytics.py    # 时间节省分析报告生成
 │   └── sync_to_excel.py              # Excel 集中存储同步
-├── prompts/                          # AI 执行规则 (每步必读)
-│   ├── document_consolidate.md       # ① 文档整理
-│   ├── requirement_review.md         # ② 需求评审
-│   ├── testpoint_generate.md         # ④ 测试点生成
-│   ├── testcase_refine.md            # ⑥ 用例细化
-│   ├── knowledge_base_archive.md     # ⑦ 入库知识库
-│   └── time_tracking.md             # 时间节省追踪 (每步完成后)
-├── templates/                        # 项目配置+知识库模板
 ├── SKILL.md                          # 本文档
 └── README.md                         # 简介
 ```
@@ -125,7 +131,7 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 1. 项目根目录 → 已缓存直接使用 / 未缓存则定位(向上查找 .skill/ 最多3层)
 2. 初始化检查 → 仅首次定位时执行
 3. 模式识别 → 判断用户意图(A/B)
-4. 执行操作 → 先阅读对应 prompts/*.md 文档
+4. 执行操作 → 先阅读对应 references/*.md 文档
 ```
 
 > ❌ 禁止每个步骤重复定位 | 禁止重复检查初始化 | 禁止整理后自动评审 | 禁止生成 Excel 后自动入库
@@ -134,11 +140,11 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 
 | 步骤 | 必读文档 | ⛔ 不读的风险 |
 |------|----------|-------------|
-| ① 文档整理 | `prompts/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审 |
-| ② 需求评审 | `prompts/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
-| ④ 生成测试点 | `prompts/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
-| ⑥ 生成用例 | `prompts/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
-| ⑦ 入库知识库 | `prompts/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
+| ① 文档整理 | `references/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审 |
+| ② 需求评审 | `references/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
+| ④ 生成测试点 | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
+| ⑥ 生成用例 | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
+| ⑦ 入库知识库 | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
 
 > ❌ 禁止凭记忆执行 | 禁止跳过阅读 | 禁止假设规则内容
 
@@ -193,11 +199,11 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 
 | 用户指令 | AI 判断 | 必读文档 | ⛔ 不读的风险 |
 |---------|--------|----------|-------------|
-| "整理" / "处理这些文档" | 执行① | `prompts/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
-| "评审" / "评审这个需求" | 执行② | `prompts/requirement_review.md` | 遗漏评审维度、JSON 格式错误、评审了运维细节 |
-| "生成测试点" / "转 XMind" | 执行④ | `prompts/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析 |
-| "生成用例" / "生成 Excel" | 执行⑥ | `prompts/testcase_refine.md` | 步骤编号错误、数据未实例化、Excel 格式错误 |
-| "入库" / "归档" | 执行⑦ | `prompts/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华 |
+| "整理" / "处理这些文档" | 执行① | `references/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
+| "评审" / "评审这个需求" | 执行② | `references/requirement_review.md` | 遗漏评审维度、JSON 格式错误、评审了运维细节 |
+| "生成测试点" / "转 XMind" | 执行④ | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析 |
+| "生成用例" / "生成 Excel" | 执行⑥ | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、Excel 格式错误 |
+| "入库" / "归档" | 执行⑦ | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华 |
 
 ---
 
@@ -216,7 +222,7 @@ python scripts/generate_excel.py <json> [参数]      # Excel 生成
 python scripts/generate_review_report.py --input <json> --output <md>  # 评审报告
 ```
 
-> ⚠️ 步骤⑦入库知识库**由 AI 按 `prompts/knowledge_base_archive.md` 规则手动操作**（复制文件、更新进化日志、提炼精华库），不调用脚本。
+> ⚠️ 步骤⑦入库知识库**由 AI 按 `references/knowledge_base_archive.md` 规则手动操作**（复制文件、更新进化日志、提炼精华库），不调用脚本。
 
 ### 时间节省追踪脚本
 
@@ -248,7 +254,7 @@ python scripts/sync_to_excel.py --sync-all --jsonl <JSONL> --excel <路径>    #
 python scripts/sync_to_excel.py --read --excel <路径>                        # 读取为JSON
 ```
 
-> 详见 `prompts/time_tracking.md`
+> 详见 `references/time_tracking.md`
 
 ---
 
@@ -298,12 +304,12 @@ knowledge-base/
 
 | 文件 | 内容 | 行数 |
 |------|------|------|
-| [prompts/document_consolidate.md](prompts/document_consolidate.md) | ① 文档整理：12步流程、锚点溯源格式、图片解析规则（步骤+缩进流程图）、增量识别 | ~550 |
-| [prompts/requirement_review.md](prompts/requirement_review.md) | ② 需求评审：13步流程、6维评审、JSON 格式规范、精华库读取 | ~650 |
-| [prompts/testpoint_generate.md](prompts/testpoint_generate.md) | ④ 测试点生成：10步流程、5大来源、去重合并、报告结构 | ~1100 |
-| [prompts/testcase_refine.md](prompts/testcase_refine.md) | ⑥ 用例细化：10步流程、细化规则、Excel 格式、用例分类 | ~350 |
-| [prompts/knowledge_base_archive.md](prompts/knowledge_base_archive.md) | ⑦ 入库知识库：12步流程、差异对比、精华提炼、进化指标 | ~700 |
-| [prompts/time_tracking.md](prompts/time_tracking.md) | 时间节省追踪v3：二次确认+统一小时存储+人天展示+Excel集中存储 | ~280 |
+| [references/document_consolidate.md](references/document_consolidate.md) | ① 文档整理：12步流程、锚点溯源格式、图片解析规则（步骤+缩进流程图）、增量识别 | ~550 |
+| [references/requirement_review.md](references/requirement_review.md) | ② 需求评审：13步流程、6维评审、JSON 格式规范、精华库读取 | ~650 |
+| [references/testpoint_generate.md](references/testpoint_generate.md) | ④ 测试点生成：10步流程、5大来源、去重合并、报告结构 | ~1100 |
+| [references/testcase_refine.md](references/testcase_refine.md) | ⑥ 用例细化：10步流程、细化规则、Excel 格式、用例分类 | ~350 |
+| [references/knowledge_base_archive.md](references/knowledge_base_archive.md) | ⑦ 入库知识库：12步流程、差异对比、精华提炼、进化指标 | ~700 |
+| [references/time_tracking.md](references/time_tracking.md) | 时间节省追踪v3：二次确认+统一小时存储+人天展示+Excel集中存储 | ~280 |
 
 ---
 
@@ -316,11 +322,11 @@ knowledge-base/
 
 AI：
 1. 定位项目 → 执行前置检查 → 创建 7 步 Todo（按 prompts 定义的一级主流程）
-2. 阅读 prompts/document_consolidate.md → 按文档定义的 Todo 清单执行① → 输出整理版 MD → 等待用户校验
-3. 用户确认 → 阅读 prompts/requirement_review.md → 按文档定义的 Todo 清单执行② → 输出评审报告
-4. 用户确认 → 阅读 prompts/testpoint_generate.md → 按文档定义的 Todo 清单执行④ → 输出 XMind
-5. 用户评审 XMind → 阅读 prompts/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
-6. 用户确认入库 → 阅读 prompts/knowledge_base_archive.md → 按文档定义的 Todo 清单执行⑦ → 完成
+2. 阅读 references/document_consolidate.md → 按文档定义的 Todo 清单执行① → 输出整理版 MD → 等待用户校验
+3. 用户确认 → 阅读 references/requirement_review.md → 按文档定义的 Todo 清单执行② → 输出评审报告
+4. 用户确认 → 阅读 references/testpoint_generate.md → 按文档定义的 Todo 清单执行④ → 输出 XMind
+5. 用户评审 XMind → 阅读 references/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
+6. 用户确认入库 → 阅读 references/knowledge_base_archive.md → 按文档定义的 Todo 清单执行⑦ → 完成
 ```
 
 ### 示例2：单步模式
@@ -330,7 +336,7 @@ AI：
 
 AI：
 1. 定位项目 → 识别模式B（单步执行⑥） → 创建 Todo（一级：⑥生成用例、⑦可选入库）
-2. 阅读 prompts/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
+2. 阅读 references/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
 3. 用户确认 → 流程结束 (如需入库请说"入库")
 ```
 

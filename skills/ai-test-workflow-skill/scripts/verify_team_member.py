@@ -4,7 +4,7 @@
 花名册身份验证脚本
 
 从 MySQL agent_team_roster 表查询测试人员身份，支持盲输入+精确匹配。
-替代 config/team_roster.yaml 文件读取方式，解决 web 端测试环境找不到配置文件的问题。
+替代已删除的 config/team_roster.yaml 文件读取方式，解决 web 端测试环境找不到配置文件的问题。
 
 用法：
     python verify_team_member.py --name "张三"

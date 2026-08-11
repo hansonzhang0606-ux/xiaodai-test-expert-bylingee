@@ -100,7 +100,7 @@ class ConfigLoader:
             skill_dir = os.path.dirname(script_dir)
 
         self.skill_dir = skill_dir
-        self.skill_config_dir = os.path.join(skill_dir, 'config')
+        self.skill_config_dir = os.path.join(skill_dir, 'references', 'config')
         self.project_root = project_root
         self._config = None
         self._errors = []
@@ -111,7 +111,7 @@ class ConfigLoader:
         加载配置文件
 
         加载顺序（优先级从低到高）：
-        1. config/defaults.yaml（Skill级默认配置）
+        1. references/config/defaults.yaml（Skill级默认配置）
         2. {项目目录}/.skill/project.yaml（项目级配置，优先级更高）
 
         Returns:
@@ -381,7 +381,7 @@ naming:
         missing_required = self.validate_required()
         if missing_required:
             print(f"\n[缺失必填项] {', '.join(missing_required)}")
-            print("\n请在 config/project.yaml 中配置这些项：")
+            print("\n请在 references/templates/project.yaml 中配置这些项：")
             print(self.get_config_template())
 
         missing_recommended = self.validate_recommended()

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.5.0 — 2026-08-11
+### Changed
+- 将 prompts/、config/（模板文件）、templates/ 迁移到标准目录 references/ 下，使这些文件在平台提交时能正确上传
+- 更新 SKILL.md 和脚本中所有路径引用（prompts/ → references/prompts/，config/ → references/config/，templates/ → references/templates/）
+- config/time_tracking_config.yaml 保留在 config/ 目录（运行时配置，含敏感信息，不上传）
+
 ## 2.4.2 — 2026-08-11
 ### Fixed
 - 模板化 `prompts/confluence_extract.md` 中的 Confluence 凭据，移除明文用户名密码，替换为占位符

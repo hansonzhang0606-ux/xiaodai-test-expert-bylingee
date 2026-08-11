@@ -967,9 +967,9 @@ AI 执行时使用以下配置：
 
 | 配置项 | 变量 | 来源 |
 |--------|------|------|
-| 知识库路径 | `{kb_path}` | config/project.yaml |
-| 项目组 | `{{team}}` | config/project.yaml |
-| 产品 | `{{product}}` | config/project.yaml |
+| 知识库路径 | `{kb_path}` | references/templates/project.yaml |
+| 项目组 | `{{team}}` | references/templates/project.yaml |
+| 产品 | `{{product}}` | references/templates/project.yaml |
 
 ---
 
