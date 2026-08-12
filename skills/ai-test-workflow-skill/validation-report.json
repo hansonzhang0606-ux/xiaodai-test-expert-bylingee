@@ -1,13 +1,13 @@
 {
   "summary": {
-    "ok": 32,
+    "ok": 31,
     "block": 0,
-    "warn": 1,
+    "warn": 2,
     "total": 33,
     "passed": true
   },
   "scoring": {
-    "total_score": 97.6,
+    "total_score": 92.9,
     "verdict": "pass",
     "groups": {
       "dir": {
@@ -19,7 +19,7 @@
         "weight": 10
       },
       "body": {
-        "score": 100.0,
+        "score": 66.7,
         "weight": 8
       },
       "script": {
@@ -60,7 +60,7 @@
           "severity": "warn",
           "desc": "只允许 scripts/、references/、assets/、evals/、.meta/ 子目录及标准一级文件；隐藏点文件除外",
           "status": "warn",
-          "msg": "Non-standard items found — non-standard directories: ['config', 'prompts', 'templates']. These will NOT be uploaded during test/submit operations."
+          "msg": "Non-standard items found — non-standard directories: ['config']. These will NOT be uploaded during test/submit operations."
         },
         {
           "name": "引用文件存在",
@@ -170,7 +170,7 @@
     },
     "body": {
       "label": "正文规范",
-      "score": "3/3",
+      "score": "2/3",
       "rules": [
         {
           "name": "正文行数限制",
@@ -183,8 +183,8 @@
           "name": "正文 token 限制",
           "severity": "warn",
           "desc": "正文指令建议不超过 5000 token（估算）",
-          "status": "ok",
-          "msg": null
+          "status": "warn",
+          "msg": "Estimated body ~5726 tokens, exceeds 5000 recommendation"
         },
         {
           "name": "高风险操作确认",

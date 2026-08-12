@@ -13,8 +13,10 @@ description: |
   3. ⛔ 步骤①完成后不自动触发评审，必须等待用户指令
   4. ⛔ 步骤⑦在所有模式下都是可选的，用户说"入库"时才执行
   5. ⚠️ 进入任何主步骤时，第一步必须追加子流程 Todo（规划动作），禁止先执行操作再追加
+  6. ⏱️ 步骤①②④⑥⑦后强制收集时间节省反馈并记录到 MySQL
+  7. 📤 每步产出文件内容须直接展示在对话中供审阅，不只是给路径
 
-  📖 详细执行规则在各 references/*.md 文件中，本文档只保留流程概览和核心约束。
+  📖 规则在各 references/*.md 中。
 ---
 
 # AI Testcase Workflow Skill
@@ -27,6 +29,7 @@ description: |
 - **知识库驱动**：历史用例沉淀，精华库持续进化
 - **AI 核心推导**：AI 分析需求、推导场景、细化用例，脚本辅助输出
 - **灵活执行**：2 种模式适应不同场景
+- **⏱️ 效能追踪**：每步完成后强制收集时间节省数据，写入 MySQL，支持分析报告
 
 ---
 
@@ -38,6 +41,8 @@ description: |
 | **B 单步模式** | 按需执行任意一步（如已有评审后 XMind 直接生成用例） | 用户指定步骤→执行 |
 
 > 💡 步骤①完成后**不自动触发评审** | 步骤⑦**可选**，用户说"入库"才执行
+>
+> ⏱️ **强制时间追踪**：步骤①②④⑥⑦完成后，**必须**强制收集用户时间节省反馈并调用 `record_time_saved.py` 写入 MySQL `agent_time_tracking` 表。用户说"查看时间统计"时调用 `generate_time_analytics.py` 生成 HTML 报告。详见 `references/time_tracking.md`
 
 ---
 
@@ -49,13 +54,15 @@ description: |
 
 | 步骤 | 名称 | AI 参与 | 输入 | 输出 | 必读文档 | ⛔ 不读的风险 |
 |------|------|---------|------|------|----------|-------------|
-| ① | 文档整理 | 中 | 需求目录(源文件) | 整理版 MD + source/归档 | `references/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
-| ② | 需求评审 | 高 | 整理版 MD + 精华库 | 评审报告 MD+JSON | `references/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
+| ① | 文档整理 | 中 | 需求目录(源文件) | 整理版 MD + source/归档 + ⏱️时间反馈 | `references/document_consolidate.md` | 锚点格式错误、图片未分确定/不确定、增量识别失效、自动触发评审、流程图使用 Mermaid 而非步骤+缩进 |
+| ② | 需求评审 | 高 | 整理版 MD + 精华库 | 评审报告 MD+JSON + ⏱️时间反馈 | `references/requirement_review.md` | 遗漏评审维度、JSON 格式错误、精华库未读取、评审了运维细节 |
 | ③ | 确认评审 | - | - | - | - | 等待用户确认 |
-| ④ | 生成测试点 | 高 | 整理版 MD+评审报告+精华库 | 测试点 JSON+XMind+报告 | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
+| ④ | 生成测试点 | 高 | 整理版 MD+评审报告+精华库 | 测试点 JSON+XMind+报告 + ⏱️时间反馈 | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析、未生成测试点报告 |
 | ⑤ | 评审XMind | - | - | {需求名}_测试点.xmind（用户直接在此文件上评审） | - | 用户人工评审 |
-| ⑥ | 生成用例 | 高 | {需求名}_测试点.xmind + 整理版 MD | 测试用例 JSON+Excel + reviewed.json（仅模式A） | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
-| ⑦ | 入库知识库 | 中 | 全部产出物 | 知识库更新 | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
+| ⑥ | 生成用例 | 高 | {需求名}_测试点.xmind + 整理版 MD | 测试用例 JSON+Excel + reviewed.json（仅模式A）+ ⏱️时间反馈 | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、步骤与预期不对应、Excel 格式错误 |
+| ⑦ | 入库知识库 | 中 | 全部产出物 | 知识库更新 + ⏱️时间反馈 | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华、进化日志未更新 |
+
+> ⏱️ 步骤③（确认评审）和⑤（评审XMind）是人工操作环节，不追踪时间节省。
 
 ---
 
@@ -170,18 +177,64 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 | 禁止假设状态 | 标记「已完成」前必须实际执行该操作 |
 | 禁止修改路径 | 路径字符串原样复制，禁止添加/删除空格符号 |
 
+### 5. ⏱️ 每步完成后强制时间节省反馈（不可跳过）
+
+步骤 ①②④⑥⑦ 完成后，**必须**强制收集用户时间节省反馈，按以下流程执行：
+
+1. **通报完成 + 展示参考时间 + 强制询问**（必做）
+   - 根据需求复杂度展示参考范围，如"本步骤节省时间约 2~3 小时，是否采纳？"
+   - 用户可回复"采纳"或自行输入数值
+2. **解析用户回复**
+   - "采纳" → 取参考范围的**中间值**（如参考 2~3 小时则取 2.5 小时）
+   - "3小时" / "3h" → 直接用，hours=3.0
+   - "1天" / "1.2人天" → 按 1 人天=8 小时换算后存储
+3. **二次确认**（展示数据等用户确认，不确认不保存）
+4. **调用 `record_time_saved.py` 写入 MySQL**（`agent_time_tracking` 表 + 本地 JSONL 兜底）
+5. **确认记录**（告知用户已记录，含 MySQL 同步状态）
+
+> ❌ 禁止跳过时间反馈 | 禁止 AI 自行估算时间 | 禁止不确认就保存
+> 📖 详细规则（身份验证、参考时间表、解析规则、报告生成）见 `references/time_tracking.md`
+
+### 6. 📊 时间节省分析报告（用户触发）
+
+用户说"查看时间统计"/"时间节省分析"/"效能统计"等指令时，调用 `generate_time_analytics.py` 生成 HTML 报告：
+- 测试人员 → 个人报告（`--person "{姓名}" --mysql`）
+- 管理员 → 业务线报告（`--mysql`）
+- **必须**生成 HTML 文件 + 提供本地路径 + 展示关键数字
+
+> 禁止编造数据——如果工具/API 未返回数据，返回明确提示，不得生成占位内容。
+
+### 7. 📤 每步产出文件内容必须直接展示在对话中（不可跳过）
+
+每个步骤完成后，**必须**将产出文件的内容直接展示在对话回复中，让用户可以直接审阅，**不只是告诉文件路径**。
+
+| 文件类型 | 展示方式 |
+|---------|---------|
+| `.md` 文件 | 使用 `read` 工具读取文件全文，在回复中完整展示 |
+| `.json` 文件 | 使用 `read` 工具读取，以格式化 JSON 或表格展示关键内容 |
+| `.xlsx` 文件 | 使用 `read` 工具读取，以 Markdown 表格展示用例数据摘要 |
+| `.xmind` 文件 | 以缩进列表展示树形结构（模块→功能点→测试点） |
+
+**执行规则**：
+1. 文件保存后，**立即**使用 `read` 工具读取文件内容
+2. 将读取到的内容整理后**直接输出在对话回复中**（不是只调用工具，而是把内容写在回复文本里）
+3. 对于大文件（>200 行），展示前 100 行 + 末尾摘要，并提示"完整文件已保存至 {路径}"
+
+> ❌ 禁止只给文件路径而不展示内容 | 禁止用"文件已生成"替代内容展示
+> 💡 用户无法直接访问 AI 沙箱中的文件，必须将内容输出到对话中
+
 ---
 
 ## 📊 产出物清单
 
 | 步骤 | 产出物 |
 |------|--------|
-| ① | `{目录名}_整理版_v{version}.md` + `source/.整理索引.yaml` + `source/` 归档 |
-| ② | `*_评审报告.md` + `*_评审数据.json` |
-| ④ | `*_测试点.xmind` + `*_测试点.json` + `*_测试点生成报告.md` |
+| ① | `{目录名}_整理版_v{version}.md` + `source/.整理索引.yaml` + `source/` 归档 + ⏱️ 时间节省记录 + 📤 内容展示 |
+| ② | `*_评审报告.md` + `*_评审数据.json` + ⏱️ 时间节省记录 + 📤 内容展示 |
+| ④ | `*_测试点.xmind` + `*_测试点.json` + `*_测试点生成报告.md` + ⏱️ 时间节省记录 + 📤 内容展示 |
 | ⑤ | `*_测试点.xmind`（用户直接在此文件上评审，覆盖原文件） |
-| ⑥ | `*_测试用例.json` → `*_测试用例.xlsx` + `*_测试点_reviewed.json`（仅模式A） |
-| ⑦ | 知识库 4 个目录更新 + INDEX.md + EVOLUTION_LOG.md |
+| ⑥ | `*_测试用例.json` → `*_测试用例.xlsx` + `*_测试点_reviewed.json`（仅模式A）+ ⏱️ 时间节省记录 + 📤 内容展示 |
+| ⑦ | 知识库 4 个目录更新 + INDEX.md + EVOLUTION_LOG.md + ⏱️ 时间节省记录 + 📤 内容展示 |
 
 ---
 
@@ -204,6 +257,7 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 | "生成测试点" / "转 XMind" | 执行④ | `references/testpoint_generate.md` | 测试点格式错误、未去重、缺少处理决策解析 |
 | "生成用例" / "生成 Excel" | 执行⑥ | `references/testcase_refine.md` | 步骤编号错误、数据未实例化、Excel 格式错误 |
 | "入库" / "归档" | 执行⑦ | `references/knowledge_base_archive.md` | 命名不规范、重复入库、未提炼精华 |
+| "查看时间统计" / "效能统计" | 生成报告 | `references/time_tracking.md` | 未生成 HTML 报告、未提供文件路径 |
 
 ---
 
@@ -224,7 +278,9 @@ python scripts/generate_review_report.py --input <json> --output <md>  # 评审�
 
 > ⚠️ 步骤⑦入库知识库**由 AI 按 `references/knowledge_base_archive.md` 规则手动操作**（复制文件、更新进化日志、提炼精华库），不调用脚本。
 
-### 时间节省追踪脚本
+### 时间节省追踪脚本（⛔ 每步完成后强制调用）
+
+> ⛔ **强制规则**：步骤 ①②④⑥⑦ 完成后，**必须**按 `references/time_tracking.md` 的完整流程执行：通报完成 → 展示参考时间 → 强制询问 → 解析回复 → 二次确认 → 调用脚本记录 → 确认结果。**不可跳过。**
 
 ```bash
 # 每步完成后记录时间节省（v3: 统一存储为小时，支持二次确认）
@@ -233,17 +289,17 @@ python scripts/record_time_saved.py \
   --step "{步骤}" --step-code "{代码}" \
   --hours {小时数} --biz-line "{业务线}" [--remark "{备注}"]
 
-# 也可用人天输入，脚本自动换算为小时存储
+# 也可用人天输入，脚本自动换算为小时存储（1人天=8小时）
 python scripts/record_time_saved.py \
   --employee "{员工}" --user-story "{故事}" \
   --step "{步骤}" --step-code "{代码}" \
   --person-days {人天数} --biz-line "{业务线}"
 
-# 生成HTML分析报告（以人天为主展示）
-python scripts/generate_time_analytics.py --biz-line "{业务线}"
+# 生成HTML分析报告（以人天为主展示，从 MySQL 读取数据）
+python scripts/generate_time_analytics.py --biz-line "{业务线}" --mysql
 
-# 指定 Excel 数据源生成报告
-python scripts/generate_time_analytics.py --biz-line "{业务线}" --input <Excel路径>
+# 个人报告（仅查看自己的数据）
+python scripts/generate_time_analytics.py --biz-line "{业务线}" --person "{姓名}" --mysql
 
 # 导出CSV
 python scripts/generate_time_analytics.py --biz-line "{业务线}" --format csv
@@ -254,7 +310,7 @@ python scripts/sync_to_excel.py --sync-all --jsonl <JSONL> --excel <路径>    #
 python scripts/sync_to_excel.py --read --excel <路径>                        # 读取为JSON
 ```
 
-> 详见 `references/time_tracking.md`
+> 📖 详细规则（身份验证、参考时间表、解析规则、报告生成、MySQL 初始化）见 `references/time_tracking.md`
 
 ---
 
@@ -309,7 +365,7 @@ knowledge-base/
 | [references/testpoint_generate.md](references/testpoint_generate.md) | ④ 测试点生成：10步流程、5大来源、去重合并、报告结构 | ~1100 |
 | [references/testcase_refine.md](references/testcase_refine.md) | ⑥ 用例细化：10步流程、细化规则、Excel 格式、用例分类 | ~350 |
 | [references/knowledge_base_archive.md](references/knowledge_base_archive.md) | ⑦ 入库知识库：12步流程、差异对比、精华提炼、进化指标 | ~700 |
-| [references/time_tracking.md](references/time_tracking.md) | 时间节省追踪v3：二次确认+统一小时存储+人天展示+Excel集中存储 | ~280 |
+| [references/time_tracking.md](references/time_tracking.md) | 时间节省追踪v5：强制反馈+二次确认+参考时间+MySQL实时同步+HTML报告 | ~412 |
 
 ---
 
@@ -321,12 +377,12 @@ knowledge-base/
 用户：帮我处理 D:\项目A\2026\Q2\需求目录 下的需求文档
 
 AI：
-1. 定位项目 → 执行前置检查 → 创建 7 步 Todo（按 prompts 定义的一级主流程）
-2. 阅读 references/document_consolidate.md → 按文档定义的 Todo 清单执行① → 输出整理版 MD → 等待用户校验
-3. 用户确认 → 阅读 references/requirement_review.md → 按文档定义的 Todo 清单执行② → 输出评审报告
-4. 用户确认 → 阅读 references/testpoint_generate.md → 按文档定义的 Todo 清单执行④ → 输出 XMind
-5. 用户评审 XMind → 阅读 references/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
-6. 用户确认入库 → 阅读 references/knowledge_base_archive.md → 按文档定义的 Todo 清单执行⑦ → 完成
+1. 定位项目 → 执行前置检查 → 创建 7 步 Todo
+2. 阅读 references/document_consolidate.md → 执行① → 输出整理版 MD → 📤 read 展示文件内容 → ⏱️强制时间反馈 → 等待用户校验
+3. 用户确认 → 阅读 references/requirement_review.md → 执行② → 输出评审报告 → 📤 read 展示文件内容 → ⏱️强制时间反馈
+4. 用户确认 → 阅读 references/testpoint_generate.md → 执行④ → 输出 XMind → 📤 展示树形结构 → ⏱️强制时间反馈
+5. 用户评审 XMind → 阅读 references/testcase_refine.md → 执行⑥ → 输出 Excel → 📤 read 展示用例表格 → ⏱️强制时间反馈
+6. 用户确认入库 → 阅读 references/knowledge_base_archive.md → 执行⑦ → ⏱️强制时间反馈 → 完成
 ```
 
 ### 示例2：单步模式
@@ -335,13 +391,24 @@ AI：
 用户：我有评审后的 XMind，帮我生成用例
 
 AI：
-1. 定位项目 → 识别模式B（单步执行⑥） → 创建 Todo（一级：⑥生成用例、⑦可选入库）
-2. 阅读 references/testcase_refine.md → 按文档定义的 Todo 清单执行⑥ → 输出 Excel
+1. 定位项目 → 识别模式B（单步执行⑥） → 创建 Todo
+2. 阅读 references/testcase_refine.md → 执行⑥ → 输出 Excel → 📤 read 展示用例表格 → ⏱️强制时间反馈
 3. 用户确认 → 流程结束 (如需入库请说"入库")
+```
+
+### 示例3：查看时间统计
+
+```
+用户：查看时间统计
+
+AI：
+1. 识别身份（会话缓存的管理员/测试人员）
+2. 调用 generate_time_analytics.py --biz-line "效贷" --mysql [--person "{姓名}"]
+3. 生成 HTML 报告 → 提供本地路径 → 展示关键数字（以人天为主）
 ```
 
 ---
 
-*版本：v2.4*
-*更新日期：2026-06-23*
-*更新：简化执行模式 3→2（原模式B合并到模式B单步），知识库默认轻量路径（仅读精华库），用户说"结合历史"时走完整路径*
+*版本：v2.7*
+*更新日期：2026-08-12*
+*更新：新增强制约束#7——每步产出文件内容必须直接展示在对话中（read 工具读取后输出到回复文本），不只是给文件路径；更新产出物清单和使用示例*
