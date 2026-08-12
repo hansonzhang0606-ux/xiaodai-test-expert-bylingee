@@ -76,55 +76,25 @@ ai-test-workflow-skill/
 │   ├── testpoint_generate.md         # ④ 测试点生成
 │   ├── testcase_refine.md            # ⑥ 用例细化
 │   ├── knowledge_base_archive.md     # ⑦ 入库知识库
-│   ├── confluence_extract.md         # Confluence 页面提取
-│   ├── time_tracking.md              # 时间节省追踪 (每步完成后)
+│   ├── time_tracking.md              # 时间节省追踪
 │   ├── config/                       # 配置模板
-│   │   ├── defaults.yaml             # 公共默认配置
-│   │   ├── smartsheet_template.yaml  # 智能表格模板
-│   │   └── time_tracking_config.yaml.template  # 时间追踪配置模板
 │   └── templates/                    # 项目配置+知识库模板
-├── config/                           # 运行时配置（不上传，仅本地）
-│   └── time_tracking_config.yaml     # 本地运行时配置
 ├── scripts/                          # Python 脚本
-│   ├── convert_to_md.py              # 文档转换 (依赖: markitdown[all], pywin32)
-│   ├── parse_xmind.py                # XMind 评审标记解析
-│   ├── generate_xmind.py             # 测试点 JSON → XMind
-│   ├── refine_testcases.py           # 用例细化
-│   ├── generate_excel.py             # Excel 生成
-│   ├── generate_review_report.py     # 评审报告生成
-│   ├── config_loader.py              # 配置加载器
-│   ├── record_time_saved.py          # 时间节省记录 (每步完成后调用)
-│   ├── generate_time_analytics.py    # 时间节省分析报告生成
-│   └── sync_to_excel.py              # Excel 集中存储同步
 ├── SKILL.md                          # 本文档
-└── README.md                         # 简介
+└── .time_tracking_config.yaml        # 运行时配置（隐藏文件，不上传）
 ```
 
 ---
 
 ## 🗂️ 多项目架构
 
-```
-ai-test-workflow-skill/     ← 通用 Skill
-{项目A}/.skill/                 ← 项目A配置+知识库
-{项目B}/.skill/                 ← 项目B配置+知识库
-```
-
-AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最多3层) → 定位项目根目录
+AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最多3层) → 定位项目根目录。每个项目独立 `.skill/` 配置和知识库。
 
 ---
 
 ## 🆕 新项目初始化
 
-**触发**：首次定位到项目，检查 `{项目根}/.skill/project.yaml` 是否存在
-
-**流程**：
-1. 创建 `.skill/` + `knowledge-base/` 目录结构
-2. 复制模板文件 (project.yaml + 知识库模板)
-3. 询问用户填写配置 (项目组/产品/模块路径)
-4. 更新 project.yaml
-
-**安全规则**：目录/文件已存在 → 跳过，不覆盖
+首次定位到项目时，检查 `{项目根}/.skill/project.yaml`：创建 `.skill/` + `knowledge-base/` 目录结构，复制模板，询问用户填写配置。已存在则跳过。
 
 ---
 
@@ -141,7 +111,7 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 4. 执行操作 → 先阅读对应 references/*.md 文档
 ```
 
-> ❌ 禁止每个步骤重复定位 | 禁止重复检查初始化 | 禁止整理后自动评审 | 禁止生成 Excel 后自动入库
+> ❌ 禁止重复定位/初始化/整理后自动评审/Excel后自动入库
 
 ### 2. 每阶段必读对应文档
 
@@ -283,31 +253,21 @@ python scripts/generate_review_report.py --input <json> --output <md>  # 评审�
 > ⛔ **强制规则**：步骤 ①②④⑥⑦ 完成后，**必须**按 `references/time_tracking.md` 的完整流程执行：通报完成 → 展示参考时间 → 强制询问 → 解析回复 → 二次确认 → 调用脚本记录 → 确认结果。**不可跳过。**
 
 ```bash
-# 每步完成后记录时间节省（v3: 统一存储为小时，支持二次确认）
+# 每步完成后记录时间节省（统一存储为小时，支持二次确认）
 python scripts/record_time_saved.py \
   --employee "{员工}" --user-story "{故事}" \
   --step "{步骤}" --step-code "{代码}" \
   --hours {小时数} --biz-line "{业务线}" [--remark "{备注}"]
 
-# 也可用人天输入，脚本自动换算为小时存储（1人天=8小时）
+# 也可用人天输入（1人天=8小时）
 python scripts/record_time_saved.py \
   --employee "{员工}" --user-story "{故事}" \
   --step "{步骤}" --step-code "{代码}" \
   --person-days {人天数} --biz-line "{业务线}"
 
-# 生成HTML分析报告（以人天为主展示，从 MySQL 读取数据）
+# 生成HTML分析报告（从 MySQL 读取）
 python scripts/generate_time_analytics.py --biz-line "{业务线}" --mysql
-
-# 个人报告（仅查看自己的数据）
-python scripts/generate_time_analytics.py --biz-line "{业务线}" --person "{姓名}" --mysql
-
-# 导出CSV
-python scripts/generate_time_analytics.py --biz-line "{业务线}" --format csv
-
-# Excel 集中存储操作
-python scripts/sync_to_excel.py --init --excel <路径>                        # 初始化模板
-python scripts/sync_to_excel.py --sync-all --jsonl <JSONL> --excel <路径>    # 全量同步
-python scripts/sync_to_excel.py --read --excel <路径>                        # 读取为JSON
+python scripts/generate_time_analytics.py --biz-line "{业务线}" --person "{姓名}" --mysql  # 个人报告
 ```
 
 > 📖 详细规则（身份验证、参考时间表、解析规则、报告生成、MySQL 初始化）见 `references/time_tracking.md`
@@ -316,19 +276,7 @@ python scripts/sync_to_excel.py --read --excel <路径>                        #
 
 ## ⚙️ 项目配置
 
-**位置**: `{项目根}/.skill/project.yaml`
-
-```yaml
-project:
-  name: "项目名称"
-defaults:
-  team: "项目组"         # ⭐ 必填
-  product: "产品名称"    # ⭐ 必填
-  modulePath: "模块路径" # ⭐ 必填
-  caseLevel: "P1"
-knowledge_base:
-  relative_path: ".skill/knowledge-base"
-```
+**位置**: `{项目根}/.skill/project.yaml` — 必填 `team`(项目组)、`product`(产品名称)、`modulePath`(模块路径)。
 
 ---
 
@@ -336,36 +284,26 @@ knowledge_base:
 
 ```
 knowledge-base/
-├── INDEX.md                    # 索引
-├── EVOLUTION_LOG.md            # 进化日志(只在⑦入库时读写)
-├── patterns/                   # 精华库(参与②④⑥生成)
-│   ├── common_root_causes.md   # 高频根因 Top 10
-│   ├── common_omissions.md     # 高频遗漏 Top 10
-│   └── improvement_patterns.md # 改进措施 Top 10
-├── requirements/               # 历史需求
-├── review-reports/             # 历史评审
-├── tech-solutions/             # 历史技术方案
-└── testcases/                  # 历史测试点/用例
+├── INDEX.md / EVOLUTION_LOG.md    # 索引 / 进化日志(只在⑦入库时读写)
+├── patterns/                      # 精华库(参与②④⑥生成，≤300 Token)
+├── requirements/                  # 历史需求
+├── review-reports/                 # 历史评审
+├── tech-solutions/                 # 历史技术方案
+└── testcases/                     # 历史测试点/用例
 ```
-
-**精华库 vs 进化日志**：
-- 精华库：固定 Top 10，参与生成流程，≤ 300 Token
-- 进化日志：历史流水账，只在⑦入库时读写
 
 ---
 
 ## 📖 详细文档索引
 
-各步骤的详细执行规则、JSON 格式规范、Todo 清单定义、评审维度等详细内容，请参考对应 prompts 文件：
-
-| 文件 | 内容 | 行数 |
-|------|------|------|
-| [references/document_consolidate.md](references/document_consolidate.md) | ① 文档整理：12步流程、锚点溯源格式、图片解析规则（步骤+缩进流程图）、增量识别 | ~550 |
-| [references/requirement_review.md](references/requirement_review.md) | ② 需求评审：13步流程、6维评审、JSON 格式规范、精华库读取 | ~650 |
-| [references/testpoint_generate.md](references/testpoint_generate.md) | ④ 测试点生成：10步流程、5大来源、去重合并、报告结构 | ~1100 |
-| [references/testcase_refine.md](references/testcase_refine.md) | ⑥ 用例细化：10步流程、细化规则、Excel 格式、用例分类 | ~350 |
-| [references/knowledge_base_archive.md](references/knowledge_base_archive.md) | ⑦ 入库知识库：12步流程、差异对比、精华提炼、进化指标 | ~700 |
-| [references/time_tracking.md](references/time_tracking.md) | 时间节省追踪v5：强制反馈+二次确认+参考时间+MySQL实时同步+HTML报告 | ~412 |
+| 文件 | 内容 |
+|------|------|
+| `references/document_consolidate.md` | ① 文档整理：12步流程、锚点溯源、图片解析、增量识别 |
+| `references/requirement_review.md` | ② 需求评审：13步流程、6维评审、JSON 格式、精华库 |
+| `references/testpoint_generate.md` | ④ 测试点生成：10步流程、5大来源、去重合并 |
+| `references/testcase_refine.md` | ⑥ 用例细化：10步流程、细化规则、Excel 格式 |
+| `references/knowledge_base_archive.md` | ⑦ 入库知识库：12步流程、差异对比、精华提炼 |
+| `references/time_tracking.md` | 时间追踪v5：强制反馈+MySQL同步+HTML报告 |
 
 ---
 
@@ -396,19 +334,8 @@ AI：
 3. 用户确认 → 流程结束 (如需入库请说"入库")
 ```
 
-### 示例3：查看时间统计
-
-```
-用户：查看时间统计
-
-AI：
-1. 识别身份（会话缓存的管理员/测试人员）
-2. 调用 generate_time_analytics.py --biz-line "效贷" --mysql [--person "{姓名}"]
-3. 生成 HTML 报告 → 提供本地路径 → 展示关键数字（以人天为主）
-```
-
 ---
 
-*版本：v2.7*
+*版本：v2.7.1*
 *更新日期：2026-08-12*
-*更新：新增强制约束#7——每步产出文件内容必须直接展示在对话中（read 工具读取后输出到回复文本），不只是给文件路径；更新产出物清单和使用示例*
+*更新：config/目录迁移为.time_tracking_config.yaml隐藏文件（消除非标准目录warn），精简正文降低token数*

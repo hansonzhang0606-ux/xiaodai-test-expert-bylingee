@@ -32,7 +32,7 @@ def load_mysql_config(config_path):
 
     mysql_cfg = config.get("mysql", {})
     if not mysql_cfg.get("host"):
-        raise ValueError("MySQL 配置缺失：config/time_tracking_config.yaml 中 mysql.host 未设置")
+        raise ValueError("MySQL 配置缺失：.time_tracking_config.yaml 中 mysql.host 未设置")
 
     return {
         "host": mysql_cfg.get("host", "127.0.0.1"),

@@ -54,7 +54,7 @@ def verify_member(name, biz_line="效贷", config_path=None):
     """
     if config_path is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(script_dir, "..", "config", "time_tracking_config.yaml")
+        config_path = os.path.join(script_dir, "..", ".time_tracking_config.yaml")
 
     try:
         conn = get_connection(config_path)

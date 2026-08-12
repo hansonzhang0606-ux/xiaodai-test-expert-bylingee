@@ -80,7 +80,7 @@ def validate_employee(employee: str, biz_line: str = "效贷") -> tuple:
     """校验员工是否在 MySQL 花名册表（agent_team_roster）中"""
     try:
         from mysql_helper import get_connection
-        config_path = os.path.join(get_skill_dir(), "config", "time_tracking_config.yaml")
+        config_path = os.path.join(get_skill_dir(), ".time_tracking_config.yaml")
         conn = get_connection(config_path)
         cursor = conn.cursor()
         cursor.execute(
@@ -215,7 +215,7 @@ def record(
     if _MYSQL_AVAILABLE:
         try:
             import yaml
-            config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "time_tracking_config.yaml")
+            config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".time_tracking_config.yaml")
             with open(config_path, "r", encoding="utf-8") as f:
                 cfg = yaml.safe_load(f)
             storage_mode = cfg.get("storage_mode", "local")
@@ -233,7 +233,7 @@ def record(
 
 def load_tracking_config() -> dict:
     """加载时间追踪配置"""
-    config_path = os.path.join(get_skill_dir(), "config", "time_tracking_config.yaml")
+    config_path = os.path.join(get_skill_dir(), ".time_tracking_config.yaml")
     if not os.path.exists(config_path):
         return {}
     try:

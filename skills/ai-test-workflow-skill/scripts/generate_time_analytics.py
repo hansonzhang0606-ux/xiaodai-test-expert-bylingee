@@ -886,7 +886,7 @@ def main():
 
     # MySQL 读取优先级最高
     if args.mysql and _MYSQL_AVAILABLE:
-        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "time_tracking_config.yaml")
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".time_tracking_config.yaml")
         records = fetch_all_records(config_path, biz_line=args.biz_line, employee=args.person)
     else:
         records = load_records(args.biz_line, args.input if args.input else None)

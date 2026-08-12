@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2.7.1 — 2026-08-12
+### Fixed
+- 将 config/ 目录迁移为 .time_tracking_config.yaml 隐藏文件（消除非标准目录 warn）
+- 删除 config/ 中的重复模板文件（已存在于 references/config/）
+- 更新所有脚本和文档中的配置文件路径引用
+
+### Changed
+- 精简 SKILL.md 正文（目录结构、知识库、项目配置等章节），降低 token 数
+
 ## 2.7.0 — 2026-08-12
 ### Added
 - 新增强制约束#7：每步产出文件内容必须直接展示在对话中，使用 read 工具读取文件后输出到回复文本

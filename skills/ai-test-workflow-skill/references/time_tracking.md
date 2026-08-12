@@ -327,7 +327,7 @@ python scripts/generate_time_analytics.py --biz-line "效贷" --format csv
 
 当管理员说"初始化时间追踪数据库"时：
 
-1. 确认 `config/time_tracking_config.yaml` 中 `mysql` 段的连接信息（host/port/user/password/database）已填写
+1. 确认 `.time_tracking_config.yaml` 中 `mysql` 段的连接信息（host/port/user/password/database）已填写
 2. 在 MySQL 中执行建表脚本：
    ```bash
    mysql -h {host} -P {port} -u {user} -p < scripts/init_mysql.sql
@@ -343,11 +343,11 @@ python scripts/generate_time_analytics.py --biz-line "效贷" --format csv
    > 如果脚本不支持 --test-mysql 参数，可手动执行 Python 测试：
    ```python
    from mysql_helper import test_connection
-   result = test_connection("config/time_tracking_config.yaml")
+   result = test_connection(".time_tracking_config.yaml")
    print(result)
    ```
 5. 确认连接成功后，通知所有测试人员：
-   - 各自的 `config/time_tracking_config.yaml` 中填入相同的 MySQL 连接信息
+   - 各自的 `.time_tracking_config.yaml` 中填入相同的 MySQL 连接信息
    - 下次使用专家时数据将自动同步到共享数据库
 
 ---
