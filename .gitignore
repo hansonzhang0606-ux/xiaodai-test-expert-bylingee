@@ -6,6 +6,10 @@
 # 嵌入 git 仓库（独立项目）
 ai-partners/
 
+# 本地工作副本（不同步到 GitHub）
+skills/
+xiaodai-testing-expert/
+
 # 灵基平台运行时文件
 **/.is-changed
 **/.tracked-create
