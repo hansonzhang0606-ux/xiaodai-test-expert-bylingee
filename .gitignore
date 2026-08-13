@@ -27,3 +27,6 @@ ai-partners/
 # OS 文件
 .DS_Store
 Thumbs.db
+
+# 项目截图（不上传，根目录PNG）
+/*.png
