@@ -881,15 +881,54 @@ def main():
     parser.add_argument("--output", default="", help="输出文件路径（默认自动生成）")
     parser.add_argument("--format", choices=["html", "csv"], default="html", help="输出格式（默认：html）")
     parser.add_argument("--mysql", action="store_true", help="从 MySQL 数据库读取数据")
+    parser.add_argument("--tencent", action="store_true", help="从腾讯文档智能表格读取数据")
 
     args = parser.parse_args()
 
-    # MySQL 读取优先级最高
-    if args.mysql and _MYSQL_AVAILABLE:
-        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".time_tracking_config.yaml")
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".time_tracking_config.yaml")
+
+    # 数据读取优先级: --input > --mysql > --tencent > 本地JSONL
+    if args.input:
+        records = load_records(args.biz_line, args.input)
+        data_source = args.input
+    elif args.mysql and _MYSQL_AVAILABLE:
         records = fetch_all_records(config_path, biz_line=args.biz_line, employee=args.person)
+        data_source = "MySQL 数据库"
+    elif args.tencent:
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from tencent_docs_api import fetch_all_records as td_fetch
+            records = td_fetch(config_path)
+            data_source = "腾讯文档智能表格"
+        except ImportError:
+            print("ERROR: tencent_docs_api 模块不可用", file=sys.stderr)
+            records = []
+            data_source = "腾讯文档（模块不可用）"
     else:
-        records = load_records(args.biz_line, args.input if args.input else None)
+        # 检查 storage_mode 自动选择
+        try:
+            import yaml
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+            storage_mode = cfg.get("storage_mode", "local")
+        except:
+            storage_mode = "local"
+
+        if storage_mode == "mysql" and _MYSQL_AVAILABLE:
+            records = fetch_all_records(config_path, biz_line=args.biz_line, employee=args.person)
+            data_source = "MySQL 数据库"
+        elif storage_mode == "tencent":
+            try:
+                sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                from tencent_docs_api import fetch_all_records as td_fetch
+                records = td_fetch(config_path)
+                data_source = "腾讯文档智能表格"
+            except ImportError:
+                records = load_records(args.biz_line)
+                data_source = "本地 JSONL（腾讯模块不可用）"
+        else:
+            records = load_records(args.biz_line)
+            data_source = load_records.__doc__ or "本地 JSONL"
 
     # 个人报告模式：预过滤为指定员工的所有记录
     person_name = args.person.strip() if args.person else ""
@@ -899,10 +938,7 @@ def main():
     else:
         report_mode = "admin"
 
-    if args.mysql and _MYSQL_AVAILABLE:
-        data_source = "MySQL 数据库"
-    else:
-        data_source = args.input if args.input else get_records_path(args.biz_line)
+    if not args.input and not args.mysql and not args.tencent and storage_mode == "local":
 
     # 确定输出文件名
     if not args.output:

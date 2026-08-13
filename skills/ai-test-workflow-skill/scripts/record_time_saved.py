@@ -248,8 +248,22 @@ def record(
                     print(f"MYSQL_SYNC: success, record_id={result['record_id']}")
                 else:
                     print(f"MYSQL_SYNC: failed, {result['message']}")
+            elif storage_mode == "tencent":
+                # 腾讯文档智能表格直调
+                try:
+                    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                    from tencent_docs_api import add_record as td_add_record
+                    result = td_add_record(config_path, record)
+                    if result["success"]:
+                        print(f"TENCENT_SYNC: success")
+                    else:
+                        print(f"TENCENT_SYNC: failed, {result['message']}")
+                except ImportError:
+                    print("TENCENT_SYNC: failed, tencent_docs_api 模块不可用")
+                except Exception as e:
+                    print(f"TENCENT_SYNC: error, {e}")
         except Exception as e:
-            print(f"MYSQL_SYNC: error, {e}")
+            print(f"SYNC: error, {e}")
 
     return record
 

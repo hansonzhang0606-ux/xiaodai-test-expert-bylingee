@@ -160,7 +160,7 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
    - "3小时" / "3h" → 直接用，hours=3.0
    - "1天" / "1.2人天" → 按 1 人天=8 小时换算后存储
 3. **二次确认**（展示数据等用户确认，不确认不保存）
-4. **调用 `record_time_saved.py` 写入 MySQL**（`agent_time_tracking` 表 + 本地 JSONL 兜底）
+4. **调用 `record_time_saved.py` 写入**（MySQL/腾讯+JSONL兜底）
 5. **确认记录**（告知用户已记录，含 MySQL 同步状态）
 
 > ❌ 禁止跳过时间反馈 | 禁止AI自行估算 | 禁止不确认就保存
@@ -181,10 +181,10 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 
 | 文件类型 | 展示方式 |
 |---------|---------|
-| `.md` 文件 | 使用 `read` 工具读取文件全文，在回复中完整展示 |
-| `.json` 文件 | 使用 `read` 工具读取，以格式化 JSON 或表格展示关键内容 |
-| `.xlsx` 文件 | 使用 `read` 工具读取，以 Markdown 表格展示用例数据摘要 |
-| `.xmind` 文件 | 以缩进列表展示树形结构（模块→功能点→测试点） |
+| `.md` 文件 | `read` 工具读取全文展示 |
+| `.json` 文件 | `read` 工具读取，格式化或表格展示 |
+| `.xlsx` 文件 | `read` 工具读取，Markdown 表格摘要 |
+| `.xmind` 文件 | 缩进列表展示树形结构 |
 
 **执行规则**：
 1. 文件保存后，**立即**使用 `read` 工具读取文件内容
@@ -339,6 +339,6 @@ AI：
 
 ---
 
-*版本：v2.8*
+*版本：v2.9*
 *更新日期：2026-08-13*
-*更新：agent_time_tracking表新增user_story_code+agent_start/end_time+agent_duration_minutes，record_time_saved.py新增对应参数*
+*更新：新增腾讯文档智能表格API直调（storage_mode=tencent），沙箱环境可直接写入公网API，无需内网通道*

@@ -7,11 +7,10 @@
 # ============================================================
 # 存储模式
 # ============================================================
-# local:  仅本地 JSONL（无集中存储）
-# mysql:  本地 JSONL + MySQL 数据库（多测试人员实时同步，推荐）
-# 跨业务线共享：所有业务线的测试专家写入同一张 agent_time_tracking 表，
-# 通过 biz_line（中文名）和 biz_line_code（编码）区分。
-storage_mode: "mysql"
+# local:    仅本地 JSONL（无集中存储）
+# mysql:    本地 JSONL + MySQL 数据库（需内网/公网可访问）
+# tencent:  本地 JSONL + 腾讯文档智能表格（公网API，沙箱可用，推荐）
+storage_mode: "tencent"
 
 # 业务线标识（本专家归属的业务线，其他业务线专家需修改此处）
 biz_line: "效贷"
@@ -27,6 +26,58 @@ local_storage:
   records_file: "records.jsonl"
   report_file: "time_analytics_效贷.html"
   csv_file: "time_analytics_效贷.csv"
+
+# ============================================================
+# 腾讯文档智能表格配置（storage_mode=tencent 时生效）
+# ============================================================
+# 沙箱环境可直接访问（公网API），无需内网通道。
+# 所有测试人员的数据写入同一张共享智能表格。
+#
+# 配置步骤：
+#   1. 在腾讯文档中创建智能表格，列名见下方 field_mapping
+#   2. 在腾讯文档开放平台注册应用，获取 access_token
+#   3. 填写下方配置
+#   4. 安装依赖：pip install requests pyyaml
+tencent_docs:
+  access_token: "YOUR_ACCESS_TOKEN"     # ← 腾讯文档 API access_token
+  doc_id: "YOUR_DOC_ID"                 # ← 智能表格文档ID（URL中的ID）
+  sheet_id: "YOUR_SHEET_ID"             # ← 工作表ID
+  base_url: "https://docs.qq.com/openapi"  # API地址（可调整）
+  
+  # 字段映射：JSON记录字段 → 智能表格列名
+  field_mapping:
+    - json_key: "employee"
+      field: "员工姓名"
+      value_type: "text_value"
+    - json_key: "user_story"
+      field: "用户故事"
+      value_type: "text_value"
+    - json_key: "user_story_code"
+      field: "用户故事编号"
+      value_type: "text_value"
+      optional: true
+    - json_key: "step"
+      field: "步骤"
+      value_type: "text_value"
+    - json_key: "step_code"
+      field: "步骤编码"
+      value_type: "text_value"
+    - json_key: "time_saved_hours"
+      field: "节省小时数"
+      value_type: "number_value"
+    - json_key: "time_saved_pd"
+      field: "节省人天数"
+      value_type: "number_value"
+    - json_key: "total_hours"
+      field: "折算总小时"
+      value_type: "number_value"
+    - json_key: "biz_line"
+      field: "业务线"
+      value_type: "text_value"
+    - json_key: "remark"
+      field: "备注"
+      value_type: "text_value"
+      optional: true
 
 # ============================================================
 # MySQL 数据库配置（storage_mode=mysql 时生效）

@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2.9.0 — 2026-08-13
+### Added
+- 新增 `tencent_docs_api.py` 模块：通过 HTTP API 直调腾讯文档智能表格（公网可访问，沙箱可用）
+- `record_time_saved.py` 新增 storage_mode=tencent 支持，写入时自动同步到智能表格
+- `generate_time_analytics.py` 新增 `--tencent` 参数，从智能表格读取数据生成报告
+- 配置模板新增腾讯文档配置项（access_token/doc_id/sheet_id/field_mapping）
+
+### Changed
+- 存储模式推荐从 mysql 改为 tencent（沙箱环境可直连公网API）
+- 配置模板默认 storage_mode 改为 "tencent"
+
 ## 2.8.0 — 2026-08-13
 ### Added
 - agent_time_tracking 表新增字段：user_story_code（用户故事编号）、agent_start_time（智能体开始时间）、agent_end_time（智能体完成时间）、agent_duration_minutes（智能体实际耗时分钟，自动计算）
