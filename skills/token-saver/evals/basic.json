@@ -25,6 +25,16 @@
     "reason": "含'长话短说'，明确要求精简"
   },
   {
+    "query": "tl;dr，直接说结论就行",
+    "should_trigger": true,
+    "reason": "含英文触发词'tl;dr'和'直接说'，中英混合触发"
+  },
+  {
+    "query": "回答简单点，别啰嗦",
+    "should_trigger": true,
+    "reason": "含'回答简单点'和'别啰嗦'，新增同义触发词"
+  },
+  {
     "query": "帮我看下这个 token 验证的代码有什么 bug",
     "should_trigger": false,
     "reason": "含'token'但指 JWT token 技术名词，非'省token'触发词"
@@ -48,5 +58,25 @@
     "query": "分析一下这个反馈表单的设计有什么问题",
     "should_trigger": false,
     "reason": "含'反馈'但指产品功能，非'简单反馈'模式请求"
+  },
+  {
+    "query": "恢复正常模式，详细回答一下",
+    "should_trigger": false,
+    "reason": "含'恢复正常模式'退出触发词，意图退出而非启用极简模式"
+  },
+  {
+    "query": "不用省token了，正常说就行",
+    "should_trigger": false,
+    "reason": "含'不用省token了'退出触发词，意图退出而非启用"
+  },
+  {
+    "query": "这个功能太简洁了，能不能加更多细节",
+    "should_trigger": false,
+    "reason": "含'简洁'但方向相反——要求更多细节而非精简，属反方向 near-miss"
+  },
+  {
+    "query": "这个回答太短了，展开讲讲",
+    "should_trigger": false,
+    "reason": "含'短'但方向相反——要求展开而非精简，属反方向 near-miss"
   }
 ]

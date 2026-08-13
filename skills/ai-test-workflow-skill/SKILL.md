@@ -152,6 +152,7 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 步骤 ①②④⑥⑦ 完成后，**必须**强制收集用户时间节省反馈，按以下流程执行：
 
 1. **通报完成 + 展示参考时间 + 强制询问**（必做）
+   - AI 自动记录 `agent_start_time`（开始执行时）和 `agent_end_time`（完成时）
    - 根据需求复杂度展示参考范围，如"本步骤节省时间约 2~3 小时，是否采纳？"
    - 用户可回复"采纳"或自行输入数值
 2. **解析用户回复**
@@ -162,8 +163,8 @@ AI 自动识别项目：用户提供任意路径 → 向上查找 `.skill/` (最
 4. **调用 `record_time_saved.py` 写入 MySQL**（`agent_time_tracking` 表 + 本地 JSONL 兜底）
 5. **确认记录**（告知用户已记录，含 MySQL 同步状态）
 
-> ❌ 禁止跳过时间反馈 | 禁止 AI 自行估算时间 | 禁止不确认就保存
-> 📖 详细规则（身份验证、参考时间表、解析规则、报告生成）见 `references/time_tracking.md`
+> ❌ 禁止跳过时间反馈 | 禁止AI自行估算 | 禁止不确认就保存
+> 📖 详细规则见 `references/time_tracking.md`
 
 ### 6. 📊 时间节省分析报告（用户触发）
 
@@ -255,9 +256,11 @@ python scripts/generate_review_report.py --input <json> --output <md>  # 评审�
 ```bash
 # 每步完成后记录时间节省（统一存储为小时，支持二次确认）
 python scripts/record_time_saved.py \
-  --employee "{员工}" --user-story "{故事}" \
+  --employee "{员工}" --user-story "{故事}" --user-story-code "{编号}" \
   --step "{步骤}" --step-code "{代码}" \
-  --hours {小时数} --biz-line "{业务线}" [--remark "{备注}"]
+  --hours {小时数} --biz-line "{业务线}" \
+  --agent-start "{开始时间}" --agent-end "{完成时间}" \
+  [--remark "{备注}"]
 
 # 也可用人天输入（1人天=8小时）
 python scripts/record_time_saved.py \
@@ -336,6 +339,6 @@ AI：
 
 ---
 
-*版本：v2.7.1*
-*更新日期：2026-08-12*
-*更新：config/目录迁移为.time_tracking_config.yaml隐藏文件（消除非标准目录warn），精简正文降低token数*
+*版本：v2.8*
+*更新日期：2026-08-13*
+*更新：agent_time_tracking表新增user_story_code+agent_start/end_time+agent_duration_minutes，record_time_saved.py新增对应参数*

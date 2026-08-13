@@ -118,6 +118,9 @@ def record(
     person_days: float = None,
     biz_line: str = "效贷",
     biz_line_code: str = "XD",
+    user_story_code: str = "",
+    agent_start_time: str = None,
+    agent_end_time: str = None,
     remark: str = "",
     skip_validation: bool = False,
 ):
@@ -158,6 +161,18 @@ def record(
 
     now = datetime.now(timezone(timedelta(hours=8)))
 
+    # 计算智能体耗时（分钟）
+    agent_duration_minutes = None
+    if agent_start_time and agent_end_time:
+        try:
+            from datetime import datetime as dt_class
+            # 尝试解析 ISO 格式
+            start_dt = dt_class.fromisoformat(agent_start_time.replace("Z", "+00:00"))
+            end_dt = dt_class.fromisoformat(agent_end_time.replace("Z", "+00:00"))
+            agent_duration_minutes = round((end_dt - start_dt).total_seconds() / 60.0, 2)
+        except Exception as e:
+            print(f"⚠️  智能体耗时计算失败: {e}", file=sys.stderr)
+
     record = {
         "timestamp": now.isoformat(),
         "date": now.strftime("%Y-%m-%d"),
@@ -165,11 +180,15 @@ def record(
         "biz_line_code": biz_line_code,
         "employee": employee,
         "user_story": user_story,
+        "user_story_code": user_story_code,
         "step": step,
         "step_code": step_code,
         "time_saved_hours": time_hours,
         "time_saved_pd": time_pd,
         "total_hours": total_hours,
+        "agent_start_time": agent_start_time,
+        "agent_end_time": agent_end_time,
+        "agent_duration_minutes": agent_duration_minutes,
         "remark": remark,
     }
 
@@ -195,6 +214,10 @@ def record(
         print(ref_str, end="")
     if remark:
         print(f"   备注: {remark}")
+    if agent_duration_minutes is not None:
+        print(f"   智能体耗时: {agent_duration_minutes} 分钟")
+    if user_story_code:
+        print(f"   用户故事编号: {user_story_code}")
     print(f"   存储位置: {records_path}")
 
     # Excel 同步（storage_mode=excel 时）
@@ -350,6 +373,9 @@ def main():
     parser.add_argument("--person-days", type=float, default=None, help="节省时间（人天）")
     parser.add_argument("--biz-line", default="效贷", help="业务线名称（默认：效贷）")
     parser.add_argument("--biz-line-code", default="XD", help="业务线编码（XD=效贷, JWY=泾渭云, XR=效融, XXD=小贷, ZHJ=智慧记+运营系统, AIJXC=AI进销存, ZHJLS=智慧记零售）")
+    parser.add_argument("--user-story-code", default="", help="用户故事编号（如 US-001）")
+    parser.add_argument("--agent-start", default=None, help="智能体开始执行时间（ISO 格式，如 2026-08-12T14:30:00）")
+    parser.add_argument("--agent-end", default=None, help="智能体完成执行时间（ISO 格式，如 2026-08-12T14:45:00）")
     parser.add_argument("--remark", default="", help="备注")
     parser.add_argument("--skip-validation", action="store_true", help="跳过花名册校验")
 
@@ -368,6 +394,9 @@ def main():
         person_days=args.person_days,
         biz_line=args.biz_line,
         biz_line_code=args.biz_line_code,
+        user_story_code=args.user_story_code,
+        agent_start_time=args.agent_start,
+        agent_end_time=args.agent_end,
         remark=args.remark,
         skip_validation=args.skip_validation,
     )

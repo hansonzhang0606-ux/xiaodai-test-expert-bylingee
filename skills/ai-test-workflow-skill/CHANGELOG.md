@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2.8.0 — 2026-08-13
+### Added
+- agent_time_tracking 表新增字段：user_story_code（用户故事编号）、agent_start_time（智能体开始时间）、agent_end_time（智能体完成时间）、agent_duration_minutes（智能体实际耗时分钟，自动计算）
+- record_time_saved.py 新增 --user-story-code、--agent-start、--agent-end 参数
+- mysql_helper.py insert_record 支持新字段，含旧表兼容回退
+
+### Changed
+- init_mysql.sql 增加新字段定义和迁移 ALTER 语句
+- time_tracking.md 更新数据格式、脚本用法、流程说明
+- SKILL.md 脚本用法更新新参数
+
 ## 2.7.1 — 2026-08-12
 ### Fixed
 - 将 config/ 目录迁移为 .time_tracking_config.yaml 隐藏文件（消除非标准目录 warn）

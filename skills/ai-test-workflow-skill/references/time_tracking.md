@@ -82,6 +82,8 @@ python scripts/verify_team_member.py --name "{用户输入的姓名}"
 
 ## 四、每步完成后的执行流程（强制，不可跳过）
 
+> ⏱️ **智能体计时（自动）**：AI 在开始执行每个步骤时记录 `agent_start_time`，完成时记录 `agent_end_time`，传入 `record_time_saved.py` 的 `--agent-start` 和 `--agent-end` 参数。脚本自动计算 `agent_duration_minutes`。用户无需手动输入。
+
 ### 第 1 步：通报完成 + 展示参考时间 + 强制询问
 
 每完成一个追踪步骤后，在通报产出物的同时，**必须**追加以下询问：
@@ -171,15 +173,20 @@ python scripts/verify_team_member.py --name "{用户输入的姓名}"
 python scripts/record_time_saved.py \
   --employee "{员工姓名}" \
   --user-story "{用户故事}" \
+  --user-story-code "{用户故事编号，如US-001}" \
   --step "{步骤名称}" \
   --step-code "{步骤代码}" \
   --hours {小时数} \
   --biz-line "效贷" \
   --biz-line-code "XD" \
+  --agent-start "{智能体开始时间，ISO格式}" \
+  --agent-end "{智能体完成时间，ISO格式}" \
   --remark "{备注，可选}"
 ```
 
 > 如果用户用的是人天，则用 `--person-days {人天数}` 代替 `--hours`。脚本内部自动换算为小时存储。
+> `--agent-start` 和 `--agent-end` 可选，传入后脚本自动计算 `agent_duration_minutes`（分钟）。
+> 智能体开始/完成时间由 AI 在步骤开始和完成时记录（ISO 格式如 `2026-08-12T14:30:00`）。
 
 > 脚本输出中会包含 `MYSQL_SYNC: success` 或 `MYSQL_SYNC: failed` 行，用于判断同步结果。
 > MySQL 同步失败不阻塞工作流，本地 JSONL 已有记录（4a 兜底），在确认信息中标注同步状态。
@@ -383,14 +390,24 @@ python scripts/generate_time_analytics.py --biz-line "效贷" --format csv
   "biz_line": "效贷",
   "employee": "吴香康",
   "user_story": "US-001-贷款审批流程优化",
+  "user_story_code": "US-001",
   "step": "文档整理",
   "step_code": "01",
   "time_saved_hours": 4.0,
   "time_saved_pd": 0.5,
   "total_hours": 4.0,
+  "agent_start_time": "2026-07-21T14:30:00+08:00",
+  "agent_end_time": "2026-07-21T14:45:00+08:00",
+  "agent_duration_minutes": 15.0,
   "remark": "原本需手动整理5个文档"
 }
 ```
+
+> **新增字段**：
+> - `user_story_code`：用户故事编号（如 US-001），可与 user_story 名称分开存储
+> - `agent_start_time`：智能体开始执行该步骤的时间（ISO 格式）
+> - `agent_end_time`：智能体完成该步骤的时间（ISO 格式）
+> - `agent_duration_minutes`：智能体实际耗时（分钟）= end_time - start_time，脚本自动计算
 
 > **单位规则**：
 > - `time_saved_hours`：**始终为换算后的小时值**（无论用户输入的是小时还是人天）

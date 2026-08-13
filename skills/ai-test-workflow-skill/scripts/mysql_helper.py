@@ -65,17 +65,11 @@ def insert_record(config_path, record):
     Args:
         config_path: time_tracking_config.yaml 路径
         record: dict，包含以下字段：
-            - timestamp: ISO 格式时间戳
-            - date: YYYY-MM-DD
-            - biz_line: 业务线
-            - employee: 员工姓名
-            - user_story: 用户故事
-            - step: 步骤名称
-            - step_code: 步骤编码
-            - time_saved_hours: 节省小时数
-            - time_saved_pd: 节省人天数
-            - total_hours: 折算总小时
-            - remark: 备注（可选）
+            - timestamp, date, biz_line, biz_line_code, employee
+            - user_story, user_story_code (新)
+            - step, step_code, time_saved_hours, time_saved_pd
+            - total_hours, agent_start_time (新), agent_end_time (新)
+            - agent_duration_minutes (新), remark
 
     Returns:
         dict: {"success": bool, "message": str, "record_id": int}
@@ -87,12 +81,14 @@ def insert_record(config_path, record):
         sql = """
             INSERT INTO agent_time_tracking
                 (timestamp, date, biz_line, biz_line_code, employee, user_story,
-                 step, step_code, time_saved_hours, time_saved_pd,
-                 total_hours, remark)
+                 user_story_code, step, step_code, time_saved_hours, time_saved_pd,
+                 total_hours, agent_start_time, agent_end_time, agent_duration_minutes,
+                 remark)
             VALUES (%(timestamp)s, %(date)s, %(biz_line)s, %(biz_line_code)s,
-                    %(employee)s, %(user_story)s, %(step)s, %(step_code)s,
-                    %(time_saved_hours)s, %(time_saved_pd)s,
-                    %(total_hours)s, %(remark)s)
+                    %(employee)s, %(user_story)s, %(user_story_code)s,
+                    %(step)s, %(step_code)s, %(time_saved_hours)s, %(time_saved_pd)s,
+                    %(total_hours)s, %(agent_start_time)s, %(agent_end_time)s,
+                    %(agent_duration_minutes)s, %(remark)s)
         """
 
         params = {
@@ -102,11 +98,15 @@ def insert_record(config_path, record):
             "biz_line_code": record.get("biz_line_code", "XD"),
             "employee": record.get("employee", ""),
             "user_story": record.get("user_story", ""),
+            "user_story_code": record.get("user_story_code", ""),
             "step": record.get("step", ""),
             "step_code": record.get("step_code", ""),
             "time_saved_hours": float(record.get("time_saved_hours", 0)),
             "time_saved_pd": float(record.get("time_saved_pd", 0)),
             "total_hours": float(record.get("total_hours", 0)),
+            "agent_start_time": record.get("agent_start_time"),
+            "agent_end_time": record.get("agent_end_time"),
+            "agent_duration_minutes": record.get("agent_duration_minutes"),
             "remark": record.get("remark", ""),
         }
 
@@ -118,6 +118,42 @@ def insert_record(config_path, record):
         return {"success": True, "message": "MySQL 写入成功", "record_id": record_id}
 
     except pymysql.Error as e:
+        # 如果新字段不存在（旧表结构），回退到兼容模式
+        if "Unknown column" in str(e):
+            try:
+                conn = get_connection(config_path)
+                cursor = conn.cursor()
+                sql_compat = """
+                    INSERT INTO agent_time_tracking
+                        (timestamp, date, biz_line, biz_line_code, employee, user_story,
+                         step, step_code, time_saved_hours, time_saved_pd,
+                         total_hours, remark)
+                    VALUES (%(timestamp)s, %(date)s, %(biz_line)s, %(biz_line_code)s,
+                            %(employee)s, %(user_story)s, %(step)s, %(step_code)s,
+                            %(time_saved_hours)s, %(time_saved_pd)s,
+                            %(total_hours)s, %(remark)s)
+                """
+                params_compat = {
+                    "timestamp": record.get("timestamp"),
+                    "date": record.get("date"),
+                    "biz_line": record.get("biz_line", "效贷"),
+                    "biz_line_code": record.get("biz_line_code", "XD"),
+                    "employee": record.get("employee", ""),
+                    "user_story": record.get("user_story", ""),
+                    "step": record.get("step", ""),
+                    "step_code": record.get("step_code", ""),
+                    "time_saved_hours": float(record.get("time_saved_hours", 0)),
+                    "time_saved_pd": float(record.get("time_saved_pd", 0)),
+                    "total_hours": float(record.get("total_hours", 0)),
+                    "remark": record.get("remark", ""),
+                }
+                cursor.execute(sql_compat, params_compat)
+                conn.commit()
+                record_id = cursor.lastrowid
+                conn.close()
+                return {"success": True, "message": "MySQL 写入成功（兼容模式，新字段未入库。请执行 init_mysql.sql 中的 ALTER 语句）", "record_id": record_id}
+            except Exception as e2:
+                return {"success": False, "message": f"MySQL 写入失败（兼容模式）: {e2}", "record_id": -1}
         return {"success": False, "message": f"MySQL 写入失败: {e}", "record_id": -1}
     except Exception as e:
         return {"success": False, "message": f"未知错误: {e}", "record_id": -1}
