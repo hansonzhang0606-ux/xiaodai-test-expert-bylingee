@@ -1,0 +1,52 @@
+[
+  {
+    "query": "从现在开始极简模式，别废话了",
+    "should_trigger": true,
+    "reason": "含'极简模式'和'别废话'，明确请求切换到精简回复风格"
+  },
+  {
+    "query": "省token，简单反馈就好",
+    "should_trigger": true,
+    "reason": "含'省token'和'简单反馈'，直接命中触发词"
+  },
+  {
+    "query": "说关键点，告诉我答案就行，不用展开",
+    "should_trigger": true,
+    "reason": "含'说关键点'和'告诉我答案'，请求极简输出"
+  },
+  {
+    "query": "keep it short，后面回答都简洁点",
+    "should_trigger": true,
+    "reason": "含英文触发词'keep it short'和'简洁'"
+  },
+  {
+    "query": "长话短说，别解释那么多背景",
+    "should_trigger": true,
+    "reason": "含'长话短说'，明确要求精简"
+  },
+  {
+    "query": "帮我看下这个 token 验证的代码有什么 bug",
+    "should_trigger": false,
+    "reason": "含'token'但指 JWT token 技术名词，非'省token'触发词"
+  },
+  {
+    "query": "写一段简洁的产品介绍文案，要突出卖点",
+    "should_trigger": false,
+    "reason": "含'简洁'但意图是生成文案内容，非切换回复模式"
+  },
+  {
+    "query": "这个面试题的参考答案是什么",
+    "should_trigger": false,
+    "reason": "含'答案'但只是提问，非'告诉我答案'模式切换"
+  },
+  {
+    "query": "帮我生成一个简洁的 ER 图",
+    "should_trigger": false,
+    "reason": "含'简洁'但要求生成图表，非切换到极简回复模式"
+  },
+  {
+    "query": "分析一下这个反馈表单的设计有什么问题",
+    "should_trigger": false,
+    "reason": "含'反馈'但指产品功能，非'简单反馈'模式请求"
+  }
+]

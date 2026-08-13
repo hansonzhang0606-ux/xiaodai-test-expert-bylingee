@@ -1,36 +1,19 @@
-# 敏感配置（含 MySQL 凭据等）
+# 敏感配置文件（含 MySQL 连接信息，不可提交）
 **/.time_tracking_config.yaml
 **/config/time_tracking_config.yaml
 **/config/team_roster.yaml
-
-# 嵌入 git 仓库（独立项目）
-ai-partners/
-
-# 本地工作副本（不同步到 GitHub）
-skills/
-xiaodai-testing-expert/
 
 # 灵基平台运行时文件
 **/.is-changed
 **/.tracked-create
 **/.tracked-submit
 **/response.json
-**/.meta/
 
-# 灵基平台数据目录
-.lingeebuild/
-.temp/
-
-# Python
-**/__pycache__/
+# Python 缓存
+__pycache__/
 *.pyc
+*.pyo
 
-# 校验报告（可由脚本重新生成）
-**/validation-report.json
-
-# OS 文件
+# 系统文件
 .DS_Store
 Thumbs.db
-
-# 项目截图（不上传，根目录PNG）
-/*.png
